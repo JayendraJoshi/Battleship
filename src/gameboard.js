@@ -2,6 +2,7 @@ import { Ship } from "./ship";
 export class Gameboard{
 
     missedAttacks = [];
+    successfulAttacks = [];
     placedShips = [];
     board;
     constructor(){
@@ -19,16 +20,21 @@ export class Gameboard{
         }
     }
     setShipCoordinates(shipLength,[startRow,startColumn],[endRow,endColumn]){
-        if(this.AreCoordinatesUnavailable([startRow,startColumn],[endRow,endColumn])) return null;
-        this.placedShips.push([new Ship(shipLength),[startRow,startColumn], [endRow,endColumn]]);
+        if(!this.AreCoordinatesAvailable([startRow,startColumn],[endRow,endColumn])) return null;
+        let shipPath = this.getShipPath([startRow,startColumn],[endRow,endColumn]);
+        this.placedShips.push([new Ship(shipLength),shipPath]);
         return true;
     }
-    AreCoordinatesUnavailable([startRow,startColumn],[endRow,endColumn]){
-        if(startRow !== endRow && startColumn !== endColumn) return true;
+    AreCoordinatesAvailable([startRow,startColumn],[endRow,endColumn]){
+        if(startRow !== endRow && startColumn !== endColumn) return false;
+        let shipPath = this.getShipPath([startRow,startColumn],[endRow,endColumn]);
+        if(this.isAnyCoordinateOfPathTaken(shipPath)) return false;
+        return true;
+    }
+    getShipPath([startRow,startColumn],[endRow,endColumn]){
         if(startRow === endRow){
             let smallerColumn;
             let largerColumn;
-
             if(startColumn<endColumn) {
                 smallerColumn = startColumn;
                 largerColumn = endColumn;
@@ -36,9 +42,7 @@ export class Gameboard{
                 smallerColumn = endColumn;
                 largerColumn = startColumn;
             }
-            for(let i = smallerColumn;i<=largerColumn;i++){
-                if(this.isCoordinateTaken([startRow,i])) return true;
-            }
+            return this.getShipColumnPath(smallerColumn,largerColumn,startRow);
         }else{
             let smallerRow;
             let largerRow;
@@ -53,21 +57,49 @@ export class Gameboard{
             }
             let indexOfSmallerRow = letters.indexOf(smallerRow);
             let indexOfLargerRow = letters.indexOf(largerRow);
-            for(let i = indexOfSmallerRow;i<= indexOfLargerRow;i++){
-                if(this.isCoordinateTaken([letters[i],startColumn])) return true;
+            return this.getShipRowPath(letters,indexOfSmallerRow,indexOfLargerRow,startColumn)
+        }
+    }
+    getShipRowPath(letters,indexOfSmallerRow,indexOfLargerRow,column){
+        let shipPath = [];   
+        for(let i = indexOfSmallerRow;i<= indexOfLargerRow;i++){
+                shipPath.push([letters[i],column]);
+            }
+            return shipPath;
+    }
+    getShipColumnPath(smallerColumn,largerColumn,row){ 
+        let shipPath = [];
+            for(let i = smallerColumn;i<=largerColumn;i++){
+                shipPath.push([row,i]);
+            }
+            return shipPath;
+    }
+    isAnyCoordinateOfPathTaken(shipPath){
+        for(let i = 0; i< shipPath.length;i++){
+            if(this.isCoordinateTakenByAShip(shipPath[i]) || this.wasTheCoordinateShotAlready(shipPath[i])){
+                return true;
             }
         }
-        return false;
     }
-    isCoordinateTaken([row, column]){
+    isCoordinateTakenByAShip([row, column]){
         return this.placedShips
-            .flatMap((ship) => [ship[1], ship[2]])
+            .flatMap((ship) => ship[1])
             .some(coord => coord[0] === row && coord[1] === column);
     }
-    receiveAttack(){
+    receiveAttack([row,column]){
+        if(this.wasTheCoordinateShotAlready([row,column]))return null;
+        else if(this.isCoordinateTakenByAShip([row,column])){
 
+        }
     }
-
+    wasTheCoordinateShotAlready([row, column]){
+        return this.missedAttacks
+        .some(attack => attack[0]===row && attack[1] === column) &&
+        this.successfulAttacks
+        .some(attack => attack[0]===row && attack[1] === column);
+    }
+    getShipThatWasHit([row, column]){
+    }
     haveAllShipsBeenSunk(){
 
     }

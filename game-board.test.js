@@ -9,13 +9,20 @@ beforeEach(()=>{
 
 test("Gameboard correctly places ships on coordinates",()=>{
     gameboard.setShipCoordinates(5,["A",2],["A",7]);
-    expect(gameboard.placedShips).toContainEqual([expect.any(Ship),["A",2],["A",7]]);
-    expect(gameboard.placedShips).not.toContainEqual([expect.any(Ship),["A",1],["A",7]]);
+    expect(gameboard.placedShips).toContainEqual([expect.any(Ship),[["A",2],["A",3],["A",4],["A",5],["A",6],["A",7]]]);
+    expect(gameboard.placedShips).not.toContainEqual([expect.any(Ship),[["A",1],["A",3],["A",4],["A",5],["A",6],["A",7]]]);
 })
 
 test("Gameboard doesn't place multiple ships on the same coordinates",()=>{
     gameboard.setShipCoordinates(5,["A",2],["A",7]);
-    expect(gameboard.setShipCoordinates(5,["A",2],["B",7])).toBe(null);
-    expect(gameboard.setShipCoordinates(5,["B",2],["B",7])).toBe(true);
+    expect(gameboard.setShipCoordinates(5,["A",2],["D",2])).toBe(null);
+    expect(gameboard.setShipCoordinates(5,["B",2],["E",2])).toBe(true);
 })
-
+/*
+test("Receive attack function returns true when it hit a ship, false when it missed and null if the coordinate was already shot",()=>{
+    gameboard.setShipCoordinates(5,["A",2],["A",7]);
+    expect(gameboard.receiveAttack(["A",2])).toBe(true);
+    expect(gameboard.receiveAttack(["B",2])).toBe(false);
+    expect(gameboard.receiveAttack(["A",2])).toBe(null);
+})
+*/
