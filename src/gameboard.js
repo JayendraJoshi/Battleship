@@ -89,19 +89,31 @@ export class Gameboard{
     receiveAttack([row,column]){
         if(this.wasTheCoordinateShotAlready([row,column]))return null;
         else if(this.isCoordinateTakenByAShip([row,column])){
-
+           let ship = this.getShipThatWasHit([row,column]);
+           ship.hit();
+           this.successfulAttacks.push([row,column]);
+           return true;
+        }else{
+            this.missedAttacks.push([[row,column]]);
+             return false;
         }
     }
     wasTheCoordinateShotAlready([row, column]){
         return this.missedAttacks
-        .some(attack => attack[0]===row && attack[1] === column) &&
+        .some(attack => attack[0]===row && attack[1] === column) ||
         this.successfulAttacks
         .some(attack => attack[0]===row && attack[1] === column);
     }
     getShipThatWasHit([row, column]){
+        const placedShipEntry = this.placedShips
+        .find(ship => ship[1].some(coordinate => coordinate[0]===row && coordinate[1] === column));
+        return placedShipEntry[0];
     }
     haveAllShipsBeenSunk(){
+        const allShipCoordinates = this.placedShips.flatMap(ship => ship[1]);
 
+        return allShipCoordinates.every(coordinate => this.successfulAttacks
+            .some(attack => attack[0] === coordinate[0] && attack[1] === coordinate[1]));
     }
 
 

@@ -18,11 +18,19 @@ test("Gameboard doesn't place multiple ships on the same coordinates",()=>{
     expect(gameboard.setShipCoordinates(5,["A",2],["D",2])).toBe(null);
     expect(gameboard.setShipCoordinates(5,["B",2],["E",2])).toBe(true);
 })
-/*
+
 test("Receive attack function returns true when it hit a ship, false when it missed and null if the coordinate was already shot",()=>{
     gameboard.setShipCoordinates(5,["A",2],["A",7]);
     expect(gameboard.receiveAttack(["A",2])).toBe(true);
     expect(gameboard.receiveAttack(["B",2])).toBe(false);
     expect(gameboard.receiveAttack(["A",2])).toBe(null);
 })
-*/
+
+test("Gameboard reports when all ships have been sunk",()=>{
+    gameboard.setShipCoordinates(2,["A",1],["A",2]);
+    gameboard.receiveAttack(["A",1]);
+    gameboard.receiveAttack(["A",2]);
+    expect(gameboard.haveAllShipsBeenSunk()).toBe(true);
+    gameboard.setShipCoordinates(3,["B",1],["B",3]);
+    expect(gameboard.haveAllShipsBeenSunk()).toBe(false);
+})
