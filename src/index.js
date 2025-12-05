@@ -13,6 +13,10 @@ const game = function(){
     const domHandler = handleDom();
     domHandler.renderGameboard(player1.gameboard,"player1");
     domHandler.renderGameboard(player2.gameboard,"player2");
-}
 
+
+}
+const eventListeners = function(){
+    return null;
+}
 game();

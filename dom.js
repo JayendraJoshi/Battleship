@@ -24,8 +24,6 @@ function renderGameboard(gameBoard,playerName){
         rowDisplayNumber.textContent = i;
         rowDisplay.append(rowDisplayNumber);
     }
-
-
     for(let i=0;i<10;i++){
         let columnDisplayLetter = document.createElement("div");
         columnDisplayLetter.textContent = letters[i];
@@ -44,7 +42,19 @@ function renderGameboard(gameBoard,playerName){
     div.appendChild(columnDisplay);
     div.appendChild(rowDisplay);
     div.append(board);
+    renderShipsOnGameBoard(gameBoard,board);
 
+}
+function renderShipsOnGameBoard(gameBoard,domBoard){
+    const allCells = domBoard.querySelectorAll(".cell");
+    const placedShips = gameBoard.placedShips;
+    let coordinatesOfPlacedShips = placedShips.flatMap(shipPath=> shipPath[1]);
+    const classNamesOfShipCoordinates = coordinatesOfPlacedShips.map(coordinate => coordinate[0]+coordinate[1]);
+    
+    classNamesOfShipCoordinates.forEach(className => {
+        const cell = Array.from(allCells).find(cell=> cell.classList.contains(className));
+       cell.style.backgroundColor = "rgb(128, 128, 128)";
+    })
 }
 return {
     renderGameboard
