@@ -23,20 +23,43 @@ main{
 footer{
    flex:1 0 10vh;
 }
+.board-container{
+    display: grid;
+    grid-template-columns: auto 1fr; 
+    grid-template-rows: auto 1fr;
+}
 .board{
     border:1px solid black;
     display: flex;
     width:250px;
     height: 250px;
 }
+.column-display{
+    grid-row: 1;
+    grid-column: 1 /-1;
+    display: flex;
+}
+.column-display div{
+   flex-grow: 1;
+   text-align: center;
+}
 .column{
     flex-grow: 1;
-    height: 100%;
+   display: flex;
+   flex-direction: column;
+}
+.row-display{
     display: flex;
     flex-direction: column;
-   
+    grid-column: 1;       
+    grid-row: 2 / -1;  
+}
+.row-display div{
+    flex-grow: 1;
+   text-align: center;
 }
 .cell{
     border:1px solid black;
     flex-grow: 1;
+    
 }
