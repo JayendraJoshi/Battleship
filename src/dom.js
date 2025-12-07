@@ -1,4 +1,4 @@
-import { Gameboard } from "./src/gameboard";
+import { Gameboard } from "./gameboard";
 
 export const handleDom = function(){
 

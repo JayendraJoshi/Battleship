@@ -1,5 +1,5 @@
 import { Gameboard } from "./src/gameboard";
-import { handleDom } from "./dom";
+import { handleDom } from "./src/dom";
 import { Player } from "./src/player";
 
 let domHandler;
