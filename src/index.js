@@ -25,16 +25,32 @@ export const eventListeners = function(){
         player1 = p1;
         player2 = p2;
     }
-
     function setEventListenersOnGameboard(gameboard){
         gameboard.addEventListener("click",handleClickOnGameBoard);
     }
     function handleClickOnGameBoard(event){
+        const gameboard = event.currentTarget;
         let coordinateClass = event.target.classList[event.target.classList.length-1];
         let coordinateAsArray = coordinateClass.split('');
         coordinateAsArray[1] = parseInt(coordinateAsArray[1]);
-        player2.gameboard.receiveAttack(coordinateAsArray);
 
+        let waitingPlayer;
+        let playingPlayer;
+
+        if(player2.getDomGameboard() === gameboard){
+            waitingPlayer = player2;
+            playingPlayer = player1;
+        } else{
+            waitingPlayer = player1;
+            playingPlayer = player2;
+        }
+        if(waitingPlayer.gameboard.receiveAttack(coordinateAsArray)===false){
+            removeEventListenersOnGameboard(waitingPlayer.getDomGameboard());
+            setEventListenersOnGameboard(playingPlayer.getDomGameboard());
+        };
+    }
+    function removeEventListenersOnGameboard(gameboard){
+        gameboard.removeEventListener("click",handleClickOnGameBoard);
     }
     return{
         setEventListenersOnGameboard,
