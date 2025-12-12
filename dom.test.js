@@ -1,6 +1,13 @@
 import { Gameboard } from "./src/gameboard";
 import { handleDom } from "./src/dom";
 import { Player } from "./src/player";
+import fs from 'fs';
+import path from 'path';
+
+const html = fs.readFileSync(
+    path.resolve(__dirname, './src/template.html'),
+    'utf8'
+);
 
 let domHandler;
 let gameBoard;
@@ -10,8 +17,7 @@ beforeEach(() => {
     domHandler = handleDom();
     player1 = new Player();
     gameBoard = player1.gameboard;
-    const body = document.querySelector("body");
-    body.appendChild(document.createElement("main"));
+    document.documentElement.innerHTML = html;
 })
 afterEach(() => {
     document.body.innerHTML = ""; 

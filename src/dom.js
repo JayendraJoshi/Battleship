@@ -2,12 +2,8 @@ import { Gameboard } from "./gameboard";
 
 export const handleDom = function(){
 
-function renderGameboard(gameBoard,playerName){
-    const main = document.querySelector("main");
-    const div = document.createElement("div");
-    div.classList.add(`${playerName}`);
-    div.classList.add("board-container");
-    main.appendChild(div);
+function renderGameboard(gameBoard,playerNumber){
+    const container = document.querySelector(`.${playerNumber}`);
     const letters = ["A","B","C","D","E","F","G","H","I","J"];
 
     let board = document.createElement("div");
@@ -39,9 +35,9 @@ function renderGameboard(gameBoard,playerName){
         }
         board.appendChild(column);
     }
-    div.appendChild(columnDisplay);
-    div.appendChild(rowDisplay);
-    div.append(board);
+    container.appendChild(columnDisplay);
+    container.appendChild(rowDisplay);
+    container.append(board);
     renderShipsOnGameBoard(gameBoard,board);
 
 }
@@ -56,6 +52,7 @@ function renderShipsOnGameBoard(gameBoard,domBoard){
        cell.style.backgroundColor = "rgb(128, 128, 128)";
     })
 }
+
 return {
     renderGameboard
 }

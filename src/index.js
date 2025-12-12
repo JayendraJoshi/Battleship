@@ -2,7 +2,7 @@ import "./styles.css";
 import { Player } from "./player";
 import { handleDom } from "./dom";
 
-const game = function(){
+export const game = function(){
     const player1 = new Player("real");
     const player2 = new Player("real");
     player1.gameboard.setShipCoordinates("2",["A",2],["A",3]);
@@ -44,19 +44,33 @@ export const eventListeners = function(){
             waitingPlayer = player1;
             playingPlayer = player2;
         }
-        if(waitingPlayer.gameboard.receiveAttack(coordinateAsArray)===false){
+        let attackResult = waitingPlayer.gameboard.receiveAttack(coordinateAsArray);
+        if(attackResult === false){
             removeEventListenersOnGameboard(waitingPlayer.getDomGameboard());
             setEventListenersOnGameboard(playingPlayer.getDomGameboard());
-        };
+        }else if(attackResult === true){
+            if(waitingPlayer.gameboard.haveAllShipsBeenSunk()===true){
+                removeEventListenersOnGameboard(waitingPlayer.getDomGameboard());
+                endGame(waitingPlayer);
+            }
+        }
     }
     function removeEventListenersOnGameboard(gameboard){
         gameboard.removeEventListener("click",handleClickOnGameBoard);
+    }
+    function endGame(player){
+        const infoContainer = document.querySelector(".info-container");
+        infoContainer.textContent="game over";
     }
     return{
         setEventListenersOnGameboard,
         handleClickOnGameBoard,
         setPlayers
     }
+}
+
+if (typeof process === 'undefined' || process.env.NODE_ENV !== 'test') {
+    game();
 }
 
 

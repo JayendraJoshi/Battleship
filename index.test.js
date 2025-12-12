@@ -1,6 +1,13 @@
 import { Player } from "./src/player";
 import { eventListeners } from "./src";
 import { handleDom } from "./src/dom";
+import fs from 'fs';
+import path from 'path';
+
+const html = fs.readFileSync(
+    path.resolve(__dirname, './src/template.html'),
+    'utf8'
+);
 
 let handleEventListeners = eventListeners();
 let player1;
@@ -9,10 +16,8 @@ let player1DomGameboard;
 let player2DomGameboard;
 
 beforeEach(()=>{
-    document.body.innerHTML = ""; 
-    const body = document.querySelector("body");
-    body.appendChild(document.createElement("main"));
-     player1 = new Player("real");
+    document.documentElement.innerHTML = html;
+    player1 = new Player("real");
         player2 = new Player("real");
         player1.gameboard.setShipCoordinates("2",["A",2],["A",3]);
         player1.gameboard.setShipCoordinates("5",["A",1],["E",1]);
@@ -88,6 +93,29 @@ test("if attack misses, the current players turn ends and the other player can s
     expect(player2DomGameboard.addEventListener).toHaveBeenCalledWith('click',expect.any(Function));
 })
 test("if all ships of a player have been sunk, no cells can be clicked any more",()=>{
-    
+    handleEventListeners.setEventListenersOnGameboard(player2DomGameboard);
+    const cellA5 = player2DomGameboard.querySelector(".A5");
+    cellA5.click();
+    //player2 turn
+    jest.spyOn(player1DomGameboard, 'removeEventListener');
+    jest.spyOn(player2DomGameboard, 'removeEventListener');
+
+    const cellA2 = player1DomGameboard.querySelector(".A2");
+    cellA2.click();
+    const cellA3 = player1DomGameboard.querySelector(".A3");
+    cellA3.click();
+    const cellA1 = player1DomGameboard.querySelector(".A1");
+    cellA1.click();
+    const cellB1 = player1DomGameboard.querySelector(".B1");
+    cellB1.click();
+    const cellC1 = player1DomGameboard.querySelector(".C1");
+    cellC1.click();
+    const cellD1 = player1DomGameboard.querySelector(".D1");
+    cellD1.click();
+    const cellE1 = player1DomGameboard.querySelector(".E1");
+    cellE1.click();
+    //all ships have been sunk
+    expect(player1.gameboard.haveAllShipsBeenSunk).toBeTruthy();
+    expect(player1DomGameboard.removeEventListener).toHaveBeenCalled();
 })
 
