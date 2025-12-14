@@ -1,5 +1,3 @@
-import { Gameboard } from "./gameboard";
-
 export const handleDom = function(){
 
 function createGameboard(playerName){
@@ -79,18 +77,22 @@ function markSuccessfulAttacksOnDOMGameboard(gameboard,domboard){
        cell.style.backgroundColor = "rgb(200, 40, 35)";
     })
 }
-function showMessageOnInfoContainer(playerName,result){
+function showMessageOnInfoContainer(playerName,keyword,shipName = ""){
     const infoContainer = document.querySelector(".info-container");
-    switch(result){
+    switch(keyword){
         case "hit":
             infoContainer.textContent = playerName +" hit an enemy ship!";
             break;
+        case "sunk":
+            infoContainer.textContent = playerName +" has sunk the enemies " +shipName+"!"; 
+             break;
         case "missed":
             infoContainer.textContent = playerName +" missed!";
             break;
         case "null":
             infoContainer.textContent = "You can't attack the same cell twice!";
             break;
+        
         }
 }
 return {

@@ -5,11 +5,11 @@ import { handleDom } from "./dom";
 export const game = function(){
     const player1 = new Player("player1");
     const player2 = new Player("player2");
-    player1.gameboard.setShipCoordinates("2",["A",2],["A",3]);
-    player1.gameboard.setShipCoordinates("5",["A",1],["E",1]);
+    player1.gameboard.setShip(2,["A",2],["A",3],"Patrol Boat");
+    player1.gameboard.setShip(5,["A",1],["E",1],"Frigate");
 
-    player2.gameboard.setShipCoordinates("2",["B",2],["B",3]);
-    player2.gameboard.setShipCoordinates("5",["C",1],["H",1]);
+    player2.gameboard.setShip(2,["B",2],["B",3],"Patrol Boat");
+    player2.gameboard.setShip(5,["C",1],["G",1],"Frigate");
     const domHandler = handleDom();
     const player1DomGameBoard = domHandler.createGameboard();
     const player2DomGameBoard = domHandler.createGameboard();
@@ -66,7 +66,12 @@ export const eventListeners = function(){
                 endGame(playingPlayer.getName());
                 return;
             }
-             domHandler.showMessageOnInfoContainer(playingPlayer.getName(),"hit");
+            if(waitingPlayer.gameboard.hasLastAttackSunkAShip()){
+                const lastSunkShip = waitingPlayer.gameboard.getLastSunkShip();
+                domHandler.showMessageOnInfoContainer(playingPlayer.getName(),"sunk",lastSunkShip.getName());
+            }else{
+                domHandler.showMessageOnInfoContainer(playingPlayer.getName(),"hit");
+            }
             return;
         }
         domHandler.showMessageOnInfoContainer(playingPlayer.getName(),"null");

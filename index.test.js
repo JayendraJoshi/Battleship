@@ -19,10 +19,10 @@ beforeEach(()=>{
     document.documentElement.innerHTML = html;
     player1 = new Player("player1");
     player2 = new Player("player2");
-    player1.gameboard.setShipCoordinates("2",["A",2],["A",3]);
-    player1.gameboard.setShipCoordinates("5",["A",1],["E",1]);
-    player2.gameboard.setShipCoordinates("2",["B",2],["B",3]);
-    player2.gameboard.setShipCoordinates("5",["C",1],["H",1]);
+    player1.gameboard.setShip("2",["A",2],["A",3]);
+    player1.gameboard.setShip("5",["A",1],["E",1]);
+    player2.gameboard.setShip("2",["B",2],["B",3]);
+    player2.gameboard.setShip("5",["C",1],["H",1]);
     const domHandler = handleDom();
     player1DomGameboard = domHandler.createGameboard();
     player2DomGameboard = domHandler.createGameboard();

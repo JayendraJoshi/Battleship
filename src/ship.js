@@ -2,6 +2,7 @@ export class Ship{
 
 length;
 numberOfHits = 0;
+name;
 
 constructor(length){
     this.length = length;
@@ -18,5 +19,12 @@ isSunk(){
         return false;
     }
 }
+setName(name){
+    this.name = name;
+}
+getName(){
+    return this.name;
+}
+
 
 }

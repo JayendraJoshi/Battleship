@@ -4,6 +4,7 @@ export class Gameboard{
     missedAttacks = [];
     successfulAttacks = [];
     placedShips = [];
+    sunkShips = [];
     board;
     constructor(){
         this.board =  {
@@ -19,10 +20,12 @@ export class Gameboard{
         "J": [ [1], [2], [3], [4], [5], [6], [7], [8], [9], [10] ]
         }
     }
-    setShipCoordinates(shipLength,[startRow,startColumn],[endRow,endColumn]){
+    setShip(shipLength,[startRow,startColumn],[endRow,endColumn],name){
         if(!this.AreCoordinatesAvailable([startRow,startColumn],[endRow,endColumn])) return null;
         let shipPath = this.getShipPath([startRow,startColumn],[endRow,endColumn]);
-        this.placedShips.push([new Ship(shipLength),shipPath]);
+        const ship = new Ship(shipLength);
+        ship.setName(name);
+        this.placedShips.push([ship,shipPath]);
         return true;
     }
     AreCoordinatesAvailable([startRow,startColumn],[endRow,endColumn]){
@@ -92,6 +95,9 @@ export class Gameboard{
            let ship = this.getShipThatWasHit([row,column]);
            ship.hit();
            this.successfulAttacks.push([row,column]);
+           if(ship.isSunk()){
+            this.sunkShips.push(ship);
+           }
            return true;
         }else{
             this.missedAttacks.push([row,column]);
@@ -115,6 +121,13 @@ export class Gameboard{
         return allShipCoordinates.every(coordinate => this.successfulAttacks
             .some(attack => attack[0] === coordinate[0] && attack[1] === coordinate[1]));
     }
-
+    hasLastAttackSunkAShip(){
+        const lastSuccessfulAttack = this.successfulAttacks[this.successfulAttacks.length-1];
+        const shipThatWasHit = this.getShipThatWasHit(lastSuccessfulAttack);
+        return shipThatWasHit.isSunk();
+    }
+    getLastSunkShip(){
+        return this.sunkShips[this.sunkShips.length-1];
+    }
 
 }

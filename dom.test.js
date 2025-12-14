@@ -50,8 +50,8 @@ test("Cells with classes A1 - J10 exist", () => {
     }
 })
 test("Places ships on board by applying black color to their cells", () => {
-    player1.gameboard.setShipCoordinates("2", ["A", 2], ["A", 3]);
-    player1.gameboard.setShipCoordinates("5", ["A", 1], ["E", 1]);
+    player1.gameboard.setShip("2", ["A", 2], ["A", 3]);
+    player1.gameboard.setShip("5", ["A", 1], ["E", 1]);
 
     const player1DomGameBoard = domHandler.createGameboard();
     domHandler.placeShipsOnGameboard(player1.gameboard, player1DomGameBoard);
@@ -71,8 +71,8 @@ test("Places ships on board by applying black color to their cells", () => {
 test("Marks missed attacks by applying blue color to cells",()=>{
     //create players
     eventHandler.setPlayers(player1,player2);
-    player1.gameboard.setShipCoordinates("2", ["A", 2], ["A", 3]);
-    player2.gameboard.setShipCoordinates("5", ["A", 1], ["E", 1]);
+    player1.gameboard.setShip("2", ["A", 2], ["A", 3]);
+    player2.gameboard.setShip("5", ["A", 1], ["E", 1]);
 
     //create gameboards and place ships
     const player1DomGameBoard = domHandler.createGameboard();
@@ -105,8 +105,8 @@ test("Marks missed attacks by applying blue color to cells",()=>{
 test("Mark successful attacks by applying blue color to cells",()=>{
      //create players
     eventHandler.setPlayers(player1,player2);
-    player1.gameboard.setShipCoordinates("2", ["A", 2], ["A", 3]);
-    player2.gameboard.setShipCoordinates("5", ["A", 1], ["E", 1]);
+    player1.gameboard.setShip("2", ["A", 2], ["A", 3]);
+    player2.gameboard.setShip("5", ["A", 1], ["E", 1]);
 
     //create gameboards and place ships
     const player1DomGameBoard = domHandler.createGameboard();
