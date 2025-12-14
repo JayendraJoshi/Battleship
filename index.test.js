@@ -17,20 +17,18 @@ let player2DomGameboard;
 
 beforeEach(()=>{
     document.documentElement.innerHTML = html;
-    player1 = new Player("real");
-        player2 = new Player("real");
-        player1.gameboard.setShipCoordinates("2",["A",2],["A",3]);
-        player1.gameboard.setShipCoordinates("5",["A",1],["E",1]);
-        player2.gameboard.setShipCoordinates("2",["B",2],["B",3]);
-        player2.gameboard.setShipCoordinates("5",["C",1],["H",1]);
-        const domHandler = handleDom();
-        domHandler.renderGameboard(player1.gameboard,"player1");
-        domHandler.renderGameboard(player2.gameboard,"player2");
-        player1.setDomGameboard(document.querySelector(".player1 .board"));
-        player2.setDomGameboard(document.querySelector(".player2 .board"));
-        player1DomGameboard = player1.getDomGameboard();
-        player2DomGameboard = player2.getDomGameboard();
-        handleEventListeners.setPlayers(player1,player2);   
+    player1 = new Player("player1");
+    player2 = new Player("player2");
+    player1.gameboard.setShipCoordinates("2",["A",2],["A",3]);
+    player1.gameboard.setShipCoordinates("5",["A",1],["E",1]);
+    player2.gameboard.setShipCoordinates("2",["B",2],["B",3]);
+    player2.gameboard.setShipCoordinates("5",["C",1],["H",1]);
+    const domHandler = handleDom();
+    player1DomGameboard = domHandler.createGameboard();
+    player2DomGameboard = domHandler.createGameboard();
+    player1.setDomGameboard(player1DomGameboard);
+    player2.setDomGameboard(player2DomGameboard);
+    handleEventListeners.setPlayers(player1,player2);   
 })
 test("Only gamebaord of starting player has an eventListener",()=>{
     jest.spyOn(player1DomGameboard, 'addEventListener');

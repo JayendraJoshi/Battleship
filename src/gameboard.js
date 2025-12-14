@@ -94,7 +94,7 @@ export class Gameboard{
            this.successfulAttacks.push([row,column]);
            return true;
         }else{
-            this.missedAttacks.push([[row,column]]);
+            this.missedAttacks.push([row,column]);
              return false;
         }
     }
