@@ -21,16 +21,17 @@ export class Gameboard{
         }
     }
     setShip(shipLength,[startRow,startColumn],[endRow,endColumn],name){
-        if(!this.AreCoordinatesAvailable([startRow,startColumn],[endRow,endColumn])) return null;
+        if(!this.areCoordinatesAvailable([startRow,startColumn],[endRow,endColumn])) return null;
         let shipPath = this.getShipPath([startRow,startColumn],[endRow,endColumn]);
         const ship = new Ship(shipLength);
         ship.setName(name);
         this.placedShips.push([ship,shipPath]);
         return true;
     }
-    AreCoordinatesAvailable([startRow,startColumn],[endRow,endColumn]){
+    areCoordinatesAvailable([startRow,startColumn],[endRow,endColumn]){
         if(startRow !== endRow && startColumn !== endColumn) return false;
         let shipPath = this.getShipPath([startRow,startColumn],[endRow,endColumn]);
+        if(!this.areCoordinatesWithinBounds(shipPath)) return false;
         if(this.isAnyCoordinateOfPathTaken(shipPath)) return false;
         return true;
     }
@@ -83,6 +84,7 @@ export class Gameboard{
                 return true;
             }
         }
+        return false;
     }
     isCoordinateTakenByAShip([row, column]){
         return this.placedShips
@@ -128,6 +130,75 @@ export class Gameboard{
     }
     getLastSunkShip(){
         return this.sunkShips[this.sunkShips.length-1];
+    }
+    setShipsRandomly(){     
+        for(let i = 2;i<6;i++){
+            let shipPath = this.getRandomAvailableShipPath(i);
+            const ship = new Ship(i);
+            ship.setName(this.getShipNameFromLength(i));
+            this.placedShips.push([ship,shipPath]);
+            if(i===3){
+                let shipPath = this.getRandomAvailableShipPath(i);
+                const ship = new Ship(i);
+                ship.setName(this.getShipNameFromLength(i,"S"));
+                this.placedShips.push([ship,shipPath]);
+            }
+        }
+    }
+    getRandomAvailableShipPath(length){
+        const letters = ["A","B","C","D","E","F","G","H","I","J"];
+        let shipPath;
+        while(true){
+            let startRow;
+            let startColumn;
+            let randomIntForStartRow;
+            let randomIntForStartColumn;
+
+            //Randomize whether the ship will be placed along x or y axis
+            let randomPlacementInt = this.getRandomInt(1,2);
+            if(randomPlacementInt === 1){
+                //Row changes
+                randomIntForStartRow = this.getRandomInt(0,10-length);
+                startRow = randomIntForStartRow;
+                startColumn = this.getRandomInt(1,10);
+
+                shipPath = this.getShipRowPath(letters,startRow,startRow+length-1,startColumn);
+            
+            }else if(randomPlacementInt === 2){
+                //Column changes
+                randomIntForStartColumn = this.getRandomInt(1,11-length);
+                startColumn = randomIntForStartColumn;
+                startRow = letters[this.getRandomInt(0,9)];
+
+                shipPath = this.getShipColumnPath(startColumn,startColumn+length-1,startRow);
+            }
+
+            //check whether the shipPath is available
+            if(this.isAnyCoordinateOfPathTaken(shipPath) || !this.areCoordinatesWithinBounds(shipPath)) continue;
+            break;
+        }
+        return shipPath;
+    }
+    getShipNameFromLength(length,variant = ""){
+        switch(length){
+            case 2:
+                return "Patrol Boat";
+            case 3:
+                if(variant=="S") return "Submarine";
+                return "Destroyer";
+            case 4:
+                return "Battleship";
+            case 5:
+                return "Carrier"
+        }
+    }
+    getRandomInt(min,max){
+        return (Math.floor(Math.random()*(max-min +1))+min);
+    }
+    areCoordinatesWithinBounds(shipPath){
+      return shipPath.every(coordinatePair => 
+            coordinatePair[0]>="A" && coordinatePair[0]<="J" && 
+            coordinatePair[1]>=1 && coordinatePair[1]<=10);
     }
 
 }

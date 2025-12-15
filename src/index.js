@@ -5,11 +5,10 @@ import { handleDom } from "./dom";
 export const game = function(){
     const player1 = new Player("player1");
     const player2 = new Player("player2");
-    player1.gameboard.setShip(2,["A",2],["A",3],"Patrol Boat");
-    player1.gameboard.setShip(5,["A",1],["E",1],"Frigate");
+    
+    player1.gameboard.setShipsRandomly();
+    player2.gameboard.setShipsRandomly();
 
-    player2.gameboard.setShip(2,["B",2],["B",3],"Patrol Boat");
-    player2.gameboard.setShip(5,["C",1],["G",1],"Frigate");
     const domHandler = handleDom();
     const player1DomGameBoard = domHandler.createGameboard();
     const player2DomGameBoard = domHandler.createGameboard();

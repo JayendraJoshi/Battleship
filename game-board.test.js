@@ -48,3 +48,17 @@ test("Gameboard returns last sunk ship",()=>{
     gameboard.receiveAttack(["A",2]);
     expect(gameboard.getLastSunkShip().name).toBe("Patrol Boat");
 })
+
+test("Gameboard sets all ships randomly",()=>{
+    gameboard.setShipsRandomly();
+    expect(gameboard.placedShips.length).toBe(5);
+    const allShips = gameboard.placedShips.flatMap(shipEntry => shipEntry[0]);
+    const shipLengths = allShips.map(ship=> ship.length);
+    expect(shipLengths.filter((value,index,self)=>self.indexOf(value) === self.lastIndexOf(value))).toEqual([2,4,5]);
+    expect(shipLengths.filter(value=> value===3).length).toBe(2);
+})
+
+test("Gameboard reports whether coordinates are out of bounds or not",()=>{
+    let shipPath = gameboard.getShipPath(["A",10],["A",13]);
+    expect(gameboard.areCoordinatesWithinBounds(shipPath)).toBe(false);
+})
