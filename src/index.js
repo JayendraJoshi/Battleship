@@ -5,7 +5,7 @@ import { handleDom } from "./dom";
 export const game = function(){
     const player1 = new Player("player1");
     const player2 = new Player("player2");
-    
+
     player1.gameboard.setShipsRandomly();
     player2.gameboard.setShipsRandomly();
 
@@ -15,7 +15,6 @@ export const game = function(){
     player1.setDomGameboard(player1DomGameBoard);
     player2.setDomGameboard(player2DomGameBoard);
     domHandler.placeShipsOnGameboard(player1.gameboard,player1DomGameBoard);
-    domHandler.placeShipsOnGameboard(player2.gameboard,player2DomGameBoard);
     domHandler.appendGameboardOnDOM(player1DomGameBoard,"player1");
     domHandler.appendGameboardOnDOM(player2DomGameBoard,"player2");
     const eventHandler = eventListeners();
@@ -38,8 +37,7 @@ export const eventListeners = function(){
         const gameboard = event.currentTarget;
         if(!event.target.classList.contains("cell")) return;
         let coordinateClass = event.target.classList[event.target.classList.length-1];
-        let coordinateAsArray = coordinateClass.split('');
-        coordinateAsArray[1] = parseInt(coordinateAsArray[1]);
+        let coordinateAsArray = [coordinateClass[0],parseInt(coordinateClass.slice(1),10)];
 
         let waitingPlayer;
         let playingPlayer;
