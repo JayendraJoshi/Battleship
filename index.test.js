@@ -134,7 +134,7 @@ test("PC player can do automatic attacks", ()=>{
     const cellA5 = player2DomGameboard.querySelector(".A5");
     cellA5.click();
     //PC turn
-    player2.automatedAttack(player1.getDomGameboard());
+    player2.automatedAttack(player1.getDomGameboard(),player1.getGameboard());
     expect(player2DomGameboard.removeEventListener).toHaveBeenCalled();
     expect(player1DomGameboard.addEventListener).toHaveBeenCalledWith('click',expect.any(Function));
 })
@@ -152,9 +152,9 @@ test("PC should attack adjacent cells if it's last attack was successful",()=>{
     //Expect automated attack to be adjacent
     handleEventListeners.removeEventListenersOnGameboard(player1DomGameboard,"PVP");
     handleEventListeners.setEventListenersOnGameboard(player1DomGameboard,"PVC");
-    player2.automatedAttack(player1.getDomGameboard());
+    player2.automatedAttack(player1.getDomGameboard(),player1.getGameboard());
     let allAttackedCells = player2.attackResults.flatMap(entry => entry[0]);
-    expect(allAttackedCells[allAttackedCells.length-1]).toBe("A1", "B2","A3");
+    expect(["A1", "B2", "A3"]).toContain(allAttackedCells[allAttackedCells.length-1]);
 })
 
 

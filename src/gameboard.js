@@ -115,7 +115,7 @@ export class Gameboard{
     getShipThatWasHit([row, column]){
         const placedShipEntry = this.placedShips
         .find(ship => ship[1].some(coordinate => coordinate[0]===row && coordinate[1] === column));
-        return placedShipEntry[0];
+        return placedShipEntry ? placedShipEntry[0] : null;
     }
     haveAllShipsBeenSunk(){
         const allShipCoordinates = this.placedShips.flatMap(ship => ship[1]);

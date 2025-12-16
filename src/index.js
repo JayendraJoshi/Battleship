@@ -113,7 +113,7 @@ export const eventListeners = function(){
                 domHandler.markMissedAttacksOnDOMGameboard(waitingPlayer.gameboard,waitingPlayer.getDomGameboard());
                 domHandler.showMessageInInfoContainerForPlayerVsPC(playingPlayer,"missed");
                 setTimeout(() => {
-                    pcPlayer.automatedAttack(playingPlayer.getDomGameboard());
+                        pcPlayer.automatedAttack(playingPlayer.getDomGameboard());
                 },1500)
                 return;
             }
@@ -161,7 +161,7 @@ export const eventListeners = function(){
                 }
                 pcPlayer.attackResults.push([coordinateClass,true]);
                 setTimeout(() => {
-                    pcPlayer.automatedAttack(waitingPlayer.getDomGameboard());
+                        pcPlayer.automatedAttack(waitingPlayer.getDomGameboard());
                 },1500)
             return;
             }
