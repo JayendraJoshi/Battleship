@@ -15,7 +15,7 @@ export class Player {
   getDomGameboard() {
     return this.domGameboard;
   }
-  getGameboard(){
+  getGameboard() {
     return this.gameboard;
   }
   getName() {
@@ -28,20 +28,9 @@ export class Player {
     return this.mode;
   }
   automatedAttack(enemyDomGameboard, enemyGameboard) {
-    let safety = 0;
     while (true) {
-      safety++;
-      if (safety > 500) break;
-
-      let allAttackedCells = this.attackResults.flatMap((entry) => entry[0]);
-      let lastSuccessfullEntry;
-
-      for (let i = this.attackResults.length - 1; i >= 0; i--) {
-        if (this.attackResults[i][1] === true){
-            lastSuccessfullEntry = this.attackResults[i];
-            break;
-        }
-      }
+      let allAttackedCells = this.attackResults.map((entry) => entry[0]);
+      let lastSuccessfullEntry = this.getLastSuccessfulEntry();
 
       if (lastSuccessfullEntry) {
         let indexOfCurrentRow = this.gameboard.letters.indexOf(
@@ -57,86 +46,148 @@ export class Player {
             currentColumnInt,
           ]) != enemyGameboard.getLastSunkShip()
         ) {
-          let rowOfNewAttack;
-          let columnOfNewAttack;
+          let safety = 4;
+          while (true) {
+            safety--;
+            if (safety == 0) break;
 
-          let randomInt = this.gameboard.getRandomInt(1, 4);
-
-          switch (randomInt) {
-            case 1:
-              if (indexOfCurrentRow !== 0) {
-                rowOfNewAttack = this.gameboard.letters[indexOfCurrentRow - 1];
-              } else {
-                rowOfNewAttack = this.gameboard.letters[indexOfCurrentRow + 1];
-              }
-              columnOfNewAttack = currentColumnInt;
-              break;
-            case 2:
-              if (indexOfCurrentRow !== 9) {
-                rowOfNewAttack = this.gameboard.letters[indexOfCurrentRow + 1];
-              } else {
-                rowOfNewAttack = this.gameboard.letters[indexOfCurrentRow - 1];
-              }
-              columnOfNewAttack = currentColumnInt;
-              break;
-            case 3:
-              if (currentColumnInt !== 1) {
-                columnOfNewAttack = currentColumnInt - 1;
-              } else {
-                columnOfNewAttack = currentColumnInt + 1;
-              }
-              rowOfNewAttack = lastRow;
-              break;
-            case 4:
-              if (currentColumnInt !== 10) {
-                columnOfNewAttack = currentColumnInt + 1;
-              } else {
-                columnOfNewAttack = currentColumnInt - 1;
-              }
-              rowOfNewAttack = lastRow;
+            let randomInt = this.gameboard.getRandomInt(1, 4);
+            let adjacentCellClass = this.getCellAdjacentByOne(randomInt,indexOfCurrentRow,currentColumnInt);
+       
+            if (allAttackedCells.includes(adjacentCellClass)) continue;
+            let adjacentCellNode = enemyDomGameboard.querySelector(
+              `.${adjacentCellClass}`
+            );
+            if (!adjacentCellNode) continue;
+            adjacentCellNode.click();
+            return;
           }
-          let adjacentCellClass = rowOfNewAttack + columnOfNewAttack;
-
-          if (allAttackedCells.includes(adjacentCellClass)) continue;
-          let adjacentCellNode = enemyDomGameboard.querySelector(
-            `.${adjacentCellClass}`
-          );
-          if (!adjacentCellNode) continue;
-          adjacentCellNode.click();
-          break;
-        }
-        else{
-            const hasAttacked = this.doRandomAttack(enemyDomGameboard,allAttackedCells);
-            if(hasAttacked)break;
-            continue;
-        }
-      } else {
-        const hasAttacked = this.doRandomAttack(enemyDomGameboard,allAttackedCells);
-        if(hasAttacked)break;
-        continue;
-        
+          safety = 4;
+          while(true){
+            safety--;
+            if (safety == 0) break;
+            let randomInt = this.gameboard.getRandomInt(1, 4);
+             let adjacentCellClass = this.getCellAdjacentByTwo(randomInt,indexOfCurrentRow,currentColumnInt);
+             if (allAttackedCells.includes(adjacentCellClass)) continue;
+            let adjacentCellNode = enemyDomGameboard.querySelector(
+              `.${adjacentCellClass}`
+            );
+            if (!adjacentCellNode) continue;
+            adjacentCellNode.click();
+            return;
+          }
+        } 
+      } 
+      const hasAttacked = this.doRandomAttack(
+        enemyDomGameboard,
+        allAttackedCells
+      );
+      if (hasAttacked) break;
+      continue;
+      
+    }
+  }
+  getLastSuccessfulEntry() {
+    if (this.attackResults.length === 0) return false;
+    for (let i = this.attackResults.length - 1; i >= 0; i--) {
+      if (this.attackResults[i][1] === true) {
+        return this.attackResults[i];
       }
     }
   }
-  getLastSuccessfullEntry(){
-    let lastSuccessfullEntry;
-    if(!this.attackResults.length>0) return false;
-      for (let i = this.attackResults.length - 1; i >= 0; i--) {
-        if (this.attackResults[i][1] === true){
-            return lastSuccessfullEntry = this.attackResults[i];
-            
-        }
-      }
+  getCellAdjacentByOne(randomInt,indexOfCurrentRow,currentColumnInt){
+    let rowOfNewAttack;
+    let columnOfNewAttack;
+    switch (randomInt) {
+              case 1:
+                if (indexOfCurrentRow !== 0) {
+                  rowOfNewAttack =
+                    this.gameboard.letters[indexOfCurrentRow - 1];
+                } else {
+                  rowOfNewAttack =
+                    this.gameboard.letters[indexOfCurrentRow + 1];
+                }
+                columnOfNewAttack = currentColumnInt;
+                break;
+              case 2:
+                if (indexOfCurrentRow !== 9) {
+                  rowOfNewAttack =
+                    this.gameboard.letters[indexOfCurrentRow + 1];
+                } else {
+                  rowOfNewAttack =
+                    this.gameboard.letters[indexOfCurrentRow - 1];
+                }
+                columnOfNewAttack = currentColumnInt;
+                break;
+              case 3:
+                if (currentColumnInt !== 1) {
+                  columnOfNewAttack = currentColumnInt - 1;
+                } else {
+                  columnOfNewAttack = currentColumnInt + 1;
+                }
+                rowOfNewAttack = this.gameboard.letters[indexOfCurrentRow];
+                break;
+              case 4:
+                if (currentColumnInt !== 10) {
+                  columnOfNewAttack = currentColumnInt + 1;
+                } else {
+                  columnOfNewAttack = currentColumnInt - 1;
+                }
+                rowOfNewAttack = this.gameboard.letters[indexOfCurrentRow];
+            }
+            return  rowOfNewAttack + columnOfNewAttack;
   }
-  doRandomAttack(enemyDomGameboard,allAttackedCells){
+  getCellAdjacentByTwo(randomInt,indexOfCurrentRow,currentColumnInt){
+     let rowOfNewAttack;
+    let columnOfNewAttack;
+    switch (randomInt) {
+              case 1:
+                if (indexOfCurrentRow !== 0 && indexOfCurrentRow!== 1) {
+                  rowOfNewAttack =
+                    this.gameboard.letters[indexOfCurrentRow - 2];
+                } else {
+                  rowOfNewAttack =
+                    this.gameboard.letters[indexOfCurrentRow + 2];
+                }
+                columnOfNewAttack = currentColumnInt;
+                break;
+              case 2:
+                if (indexOfCurrentRow !== 9 && indexOfCurrentRow !== 8) {
+                  rowOfNewAttack =
+                    this.gameboard.letters[indexOfCurrentRow + 2];
+                } else {
+                  rowOfNewAttack =
+                    this.gameboard.letters[indexOfCurrentRow - 2];
+                }
+                columnOfNewAttack = currentColumnInt;
+                break;
+              case 3:
+                if (currentColumnInt !== 1 && currentColumnInt !==2) {
+                  columnOfNewAttack = currentColumnInt - 2;
+                } else {
+                  columnOfNewAttack = currentColumnInt + 2;
+                }
+                rowOfNewAttack = this.gameboard.letters[indexOfCurrentRow];
+                break;
+              case 4:
+                if (currentColumnInt !== 10 && currentColumnInt !==9) {
+                  columnOfNewAttack = currentColumnInt + 2;
+                } else {
+                  columnOfNewAttack = currentColumnInt - 2;
+                }
+                rowOfNewAttack = this.gameboard.letters[indexOfCurrentRow];
+            }
+            return  rowOfNewAttack + columnOfNewAttack;
+  }
+  doRandomAttack(enemyDomGameboard, allAttackedCells) {
     const randomColumnInt = this.gameboard.getRandomInt(1, 10);
-        const randomRowInt = this.gameboard.getRandomInt(0, 9);
-        const randomLetter = this.gameboard.letters[randomRowInt];
-        let targetClass = randomLetter + randomColumnInt;
-        let targetCell = enemyDomGameboard.querySelector(`.${targetClass}`);
-        if (allAttackedCells.includes(targetClass)) return false;
-        if (!targetCell) return false;
-        targetCell.click();
-        return true;
+    const randomRowInt = this.gameboard.getRandomInt(0, 9);
+    const randomLetter = this.gameboard.letters[randomRowInt];
+    let targetClass = randomLetter + randomColumnInt;
+    let targetCell = enemyDomGameboard.querySelector(`.${targetClass}`);
+    if (allAttackedCells.includes(targetClass)) return false;
+    if (!targetCell) return false;
+    targetCell.click();
+    return true;
   }
 }

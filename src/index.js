@@ -93,7 +93,14 @@ export const eventListeners = function(){
         const pcPlayer = player2;
         const gameboard = event.currentTarget;
         if(!event.target.classList.contains("cell")) return;
-        let coordinateClass = event.target.classList[event.target.classList.length-1];
+        let coordinateClass;
+        for (const className of event.target.classList) {
+            if (/^[A-J](10|[1-9])$/.test(className)) {
+                coordinateClass = className;
+                break;
+            }
+        }
+        if (!coordinateClass) return;
         let coordinateAsArray = [coordinateClass[0],parseInt(coordinateClass.slice(1),10)];
 
         let waitingPlayer;
@@ -113,7 +120,7 @@ export const eventListeners = function(){
                 domHandler.markMissedAttacksOnDOMGameboard(waitingPlayer.gameboard,waitingPlayer.getDomGameboard());
                 domHandler.showMessageInInfoContainerForPlayerVsPC(playingPlayer,"missed");
                 setTimeout(() => {
-                        pcPlayer.automatedAttack(playingPlayer.getDomGameboard());
+                        pcPlayer.automatedAttack(playingPlayer.getDomGameboard(),playingPlayer.getGameboard());
                 },1500)
                 return;
             }
@@ -161,7 +168,7 @@ export const eventListeners = function(){
                 }
                 pcPlayer.attackResults.push([coordinateClass,true]);
                 setTimeout(() => {
-                        pcPlayer.automatedAttack(waitingPlayer.getDomGameboard());
+                        pcPlayer.automatedAttack(waitingPlayer.getDomGameboard(),waitingPlayer.getGameboard());
                 },1500)
             return;
             }
@@ -170,7 +177,14 @@ export const eventListeners = function(){
     function handleClickOnGameBoard(event){
         const gameboard = event.currentTarget;
         if(!event.target.classList.contains("cell")) return;
-        let coordinateClass = event.target.classList[event.target.classList.length-1];
+        let coordinateClass;
+        for (const className of event.target.classList) {
+            if (/^[A-J](10|[1-9])$/.test(className)) {
+                coordinateClass = className;
+                break;
+            }
+        }
+        if (!coordinateClass) return;
         let coordinateAsArray = [coordinateClass[0],parseInt(coordinateClass.slice(1),10)];
 
         let waitingPlayer;
