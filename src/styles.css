@@ -5,9 +5,12 @@
 }
 body{
     background-color: white;
-    display: flex;
     min-height: 100vh;
+}
+#root{
+    height:100%;
     flex-direction: column;
+    display: flex;
 }
 header{
     flex:1 0 15vh;
@@ -87,4 +90,35 @@ footer{
     border:1px solid black;
     flex-grow: 1;
     
+}
+.start-screen{
+    position:absolute;
+    background-color:white;
+    display:flex;
+    flex-direction:column;
+    padding:3rem;
+    gap:2rem;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%); 
+    opacity:1;
+    z-index:2;
+}
+.start-screen h2{
+    font-size:2rem;
+}
+.start-screen button{
+    width:80px;
+    padding:10px 20px;
+    align-self:center;
+}
+.page-cover{
+    position:fixed;
+    z-index:1;
+    top:0px;
+    left:0px;
+    height:100%;
+    width:100%;
+    background-color:black;
+    opacity:0.6;
 }

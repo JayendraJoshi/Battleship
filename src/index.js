@@ -1,37 +1,171 @@
 import "./styles.css";
 import { Player } from "./player";
+import { Gameboard } from "./gameboard"
 import { handleDom } from "./dom";
 
 export const game = function(){
-    const player1 = new Player("player1");
-    const player2 = new Player("player2");
-
-    player1.gameboard.setShipsRandomly();
-    player2.gameboard.setShipsRandomly();
 
     const domHandler = handleDom();
+    const eventHandler = eventListeners();
+    const startGameboard = new Gameboard();
+
+    //create players and their dom boards
+    const player1 = new Player("Jay");
+    const player2 = new Player("PC");
     const player1DomGameBoard = domHandler.createGameboard();
     const player2DomGameBoard = domHandler.createGameboard();
     player1.setDomGameboard(player1DomGameBoard);
     player2.setDomGameboard(player2DomGameBoard);
-    domHandler.placeShipsOnGameboard(player1.gameboard,player1DomGameBoard);
-    domHandler.appendGameboardOnDOM(player1DomGameBoard,"player1");
-    domHandler.appendGameboardOnDOM(player2DomGameBoard,"player2");
-    const eventHandler = eventListeners();
+    player1.setMode("Human");
+    player2.setMode("PC");
+
+    //create start screen
+    startGameboard.setShipsRandomly();
+    const startDomGameboard = domHandler.createGameboard();
+    domHandler.placeShipsOnGameboard(startGameboard,startDomGameboard);
+    domHandler.renderStartScreen(startDomGameboard);
+
+    //set eventListeners on start screen
     eventHandler.setPlayers(player1,player2);
-    eventHandler.setEventListenersOnGameboard(player2DomGameBoard);
+    eventHandler.setStartGameboard(startGameboard);
+    eventHandler.setEventListenerOnShuffleButton();
+    eventHandler.setEventListenerOnStartButton();
+    
 }
 export const eventListeners = function(){
     const domHandler = handleDom();
     let player1;
     let player2;
+    let startGameboard;
 
     function setPlayers(p1,p2){
         player1 = p1;
         player2 = p2;
     }
-    function setEventListenersOnGameboard(gameboard){
-        gameboard.addEventListener("click",handleClickOnGameBoard);
+    function setStartGameboard(board){
+        startGameboard = board;
+    }
+    function setEventListenersOnGameboard(gameboard,mode){
+        if(mode==="PVP"){
+            gameboard.addEventListener("click",handleClickOnGameBoard);
+        }else if(mode==="PVC"){
+            gameboard.addEventListener("click",handleClickOnGameBoardForPlayerVsPC);
+        }
+    }
+    function setEventListenerOnShuffleButton(){
+        const shuffleButton = document.querySelector(".shuffle-button");
+        if(shuffleButton){
+            const startDOMGameboard = document.querySelector(".start-screen .board-container");
+            shuffleButton.addEventListener("click",function(){
+                startGameboard.setShipsRandomly();
+                domHandler.removeShipsFromDOMGameboard(startDOMGameboard);
+                domHandler.placeShipsOnGameboard(startGameboard,startDOMGameboard);
+            })
+        }
+    }
+    function setEventListenerOnStartButton(){
+        const startButton = document.querySelector(".start-button");
+        if(startButton){
+            startButton.addEventListener("click",function(){
+                //remove start screen
+                domHandler.removeStartScreen();
+
+                //ships are placed on gameboard
+                player1.gameboard.placedShips = startGameboard.placedShips;
+                player2.gameboard.setShipsRandomly();
+                
+                //ships of player 1 are displayed on domGameboard
+                domHandler.placeShipsOnGameboard(player1.gameboard,player1.getDomGameboard());
+        
+                //gameboards are appended on DOM
+                domHandler.appendGameboardOnDOM(player1.getDomGameboard(),"player1");
+                domHandler.appendGameboardOnDOM(player2.getDomGameboard(),"player2");
+
+                //set Event on pc domboard 
+                setEventListenersOnGameboard(player2.getDomGameboard(),"PVC");
+
+                //show start message
+                domHandler.showMessageOnInfoContainer(player1,"start");
+            })
+        }
+    }
+    function handleClickOnGameBoardForPlayerVsPC(event){
+        const pcPlayer = player2;
+        const gameboard = event.currentTarget;
+        if(!event.target.classList.contains("cell")) return;
+        let coordinateClass = event.target.classList[event.target.classList.length-1];
+        let coordinateAsArray = [coordinateClass[0],parseInt(coordinateClass.slice(1),10)];
+
+        let waitingPlayer;
+        let playingPlayer;
+         if(pcPlayer.getDomGameboard() === gameboard){
+            waitingPlayer = pcPlayer;
+            playingPlayer = player1;
+        } else{
+            waitingPlayer = player1;
+            playingPlayer = pcPlayer;
+        }
+        let attackResult = waitingPlayer.gameboard.receiveAttack(coordinateAsArray);
+        if(waitingPlayer === pcPlayer){
+             if(attackResult === false){
+                removeEventListenersOnGameboard(waitingPlayer.getDomGameboard(),"PVC");
+                setEventListenersOnGameboard(playingPlayer.getDomGameboard(),"PVC");
+                domHandler.markMissedAttacksOnDOMGameboard(waitingPlayer.gameboard,waitingPlayer.getDomGameboard());
+                domHandler.showMessageInInfoContainerForPlayerVsPC(playingPlayer,"missed");
+                setTimeout(() => {
+                    pcPlayer.automatedAttack(playingPlayer.getDomGameboard());
+                },1500)
+                return;
+            }
+            else if(attackResult === true){
+                domHandler.markSuccessfulAttacksOnDOMGameboard(waitingPlayer.gameboard,waitingPlayer.getDomGameboard());
+                if(waitingPlayer.gameboard.haveAllShipsBeenSunk()===true){
+                    removeEventListenersOnGameboard(waitingPlayer.getDomGameboard(),"PVC");
+                    endGame(playingPlayer.getName());
+                    return;
+                }
+                if(waitingPlayer.gameboard.hasLastAttackSunkAShip()){
+                    const lastSunkShip = waitingPlayer.gameboard.getLastSunkShip();
+                    domHandler.showMessageInInfoContainerForPlayerVsPC(playingPlayer,"sunk",lastSunkShip.getName());
+                }else{
+                    domHandler.showMessageInInfoContainerForPlayerVsPC(playingPlayer,"hit");
+                }
+                return;
+            }
+            else{
+                domHandler.showMessageInInfoContainerForPlayerVsPC(playingPlayer,"null");
+            }
+        }
+        else if(playingPlayer === pcPlayer){
+            //false
+            if(attackResult===false){
+                removeEventListenersOnGameboard(waitingPlayer.getDomGameboard(),"PVC");
+                setEventListenersOnGameboard(playingPlayer.getDomGameboard(),"PVC");
+                domHandler.markMissedAttacksOnDOMGameboard(waitingPlayer.gameboard,waitingPlayer.getDomGameboard());
+                domHandler.showMessageInInfoContainerForPlayerVsPC(playingPlayer,"missed");
+                pcPlayer.attackResults.push([coordinateClass,false]);
+            }
+            //true
+            else if(attackResult === true){
+                domHandler.markSuccessfulAttacksOnDOMGameboard(waitingPlayer.gameboard,waitingPlayer.getDomGameboard());
+                if(waitingPlayer.gameboard.haveAllShipsBeenSunk()===true){
+                    removeEventListenersOnGameboard(waitingPlayer.getDomGameboard(),"PVC");
+                    endGame(playingPlayer.getName());
+                    return;
+                }
+                if(waitingPlayer.gameboard.hasLastAttackSunkAShip()){
+                    const lastSunkShip = waitingPlayer.gameboard.getLastSunkShip();
+                    domHandler.showMessageInInfoContainerForPlayerVsPC(playingPlayer,"sunk",lastSunkShip.getName());
+                }else{
+                    domHandler.showMessageInInfoContainerForPlayerVsPC(playingPlayer,"hit");
+                }
+                pcPlayer.attackResults.push([coordinateClass,true]);
+                setTimeout(() => {
+                    pcPlayer.automatedAttack(waitingPlayer.getDomGameboard());
+                },1500)
+            return;
+            }
+        }
     }
     function handleClickOnGameBoard(event){
         const gameboard = event.currentTarget;
@@ -51,30 +185,35 @@ export const eventListeners = function(){
         }
         let attackResult = waitingPlayer.gameboard.receiveAttack(coordinateAsArray);
         if(attackResult === false){
-            removeEventListenersOnGameboard(waitingPlayer.getDomGameboard());
-            setEventListenersOnGameboard(playingPlayer.getDomGameboard());
+            removeEventListenersOnGameboard(waitingPlayer.getDomGameboard(),"PVP");
+            setEventListenersOnGameboard(playingPlayer.getDomGameboard(),"PVP");
             domHandler.markMissedAttacksOnDOMGameboard(waitingPlayer.gameboard,waitingPlayer.getDomGameboard());
-            domHandler.showMessageOnInfoContainer(playingPlayer.getName(),"missed");
+            domHandler.showMessageOnInfoContainer(playingPlayer,"missed");
             return;
         }else if(attackResult === true){
             domHandler.markSuccessfulAttacksOnDOMGameboard(waitingPlayer.gameboard,waitingPlayer.getDomGameboard());
             if(waitingPlayer.gameboard.haveAllShipsBeenSunk()===true){
-                removeEventListenersOnGameboard(waitingPlayer.getDomGameboard());
+                removeEventListenersOnGameboard(waitingPlayer.getDomGameboard(),"PVP");
                 endGame(playingPlayer.getName());
                 return;
             }
             if(waitingPlayer.gameboard.hasLastAttackSunkAShip()){
                 const lastSunkShip = waitingPlayer.gameboard.getLastSunkShip();
-                domHandler.showMessageOnInfoContainer(playingPlayer.getName(),"sunk",lastSunkShip.getName());
+                domHandler.showMessageOnInfoContainer(playingPlayer,"sunk",lastSunkShip.getName());
             }else{
-                domHandler.showMessageOnInfoContainer(playingPlayer.getName(),"hit");
+                domHandler.showMessageOnInfoContainer(playingPlayer,"hit");
             }
             return;
         }
-        domHandler.showMessageOnInfoContainer(playingPlayer.getName(),"null");
+        domHandler.showMessageOnInfoContainer(playingPlayer,"null");
     }
-    function removeEventListenersOnGameboard(gameboard){
-        gameboard.removeEventListener("click",handleClickOnGameBoard);
+    function removeEventListenersOnGameboard(gameboard,mode){
+        if(mode==="PVP"){
+            gameboard.removeEventListener("click",handleClickOnGameBoard);
+        }else if(mode==="PVC"){
+            gameboard.removeEventListener("click",handleClickOnGameBoardForPlayerVsPC);
+        }
+        
     }
     function endGame(playerName){
         const infoContainer = document.querySelector(".info-container");
@@ -83,7 +222,12 @@ export const eventListeners = function(){
     return{
         setEventListenersOnGameboard,
         handleClickOnGameBoard,
-        setPlayers
+        handleClickOnGameBoardForPlayerVsPC,
+        setPlayers,
+        setStartGameboard,
+        setEventListenerOnShuffleButton,
+        setEventListenerOnStartButton,
+        removeEventListenersOnGameboard
     }
 }
 

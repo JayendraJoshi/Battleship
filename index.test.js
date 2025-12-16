@@ -28,27 +28,29 @@ beforeEach(()=>{
     player2DomGameboard = domHandler.createGameboard();
     player1.setDomGameboard(player1DomGameboard);
     player2.setDomGameboard(player2DomGameboard);
+    player1.setMode("Human");
+    player2.setMode("PC");
     handleEventListeners.setPlayers(player1,player2);   
 })
 test("Only gamebaord of starting player has an eventListener",()=>{
     jest.spyOn(player1DomGameboard, 'addEventListener');
     jest.spyOn(player2DomGameboard, 'addEventListener');
     
-    handleEventListeners.setEventListenersOnGameboard(player2DomGameboard);
+    handleEventListeners.setEventListenersOnGameboard(player2DomGameboard,"PVP");
     expect(player1DomGameboard.addEventListener).not.toHaveBeenCalledWith('click',expect.any(Function));
     expect(player2DomGameboard.addEventListener).toHaveBeenCalledWith('click',expect.any(Function));
 
 })
 test("handleClickOnCells calls receiveAttack of other player",()=>{
     jest.spyOn(player2.gameboard,'receiveAttack');
-    handleEventListeners.setEventListenersOnGameboard(player2DomGameboard);
+    handleEventListeners.setEventListenersOnGameboard(player2DomGameboard,"PVP");
     const cell = player2DomGameboard.querySelector(".cell");
     cell.click();
     expect(player2.gameboard.receiveAttack).toHaveBeenCalled();
 })
 test("if attack misses, player can not place again", ()=>{
     jest.spyOn(player2.gameboard,'receiveAttack');
-    handleEventListeners.setEventListenersOnGameboard(player2DomGameboard);
+    handleEventListeners.setEventListenersOnGameboard(player2DomGameboard,"PVP");
     const cellA5 = player2DomGameboard.querySelector(".A5");
     cellA5.click();
     expect(player2.gameboard.receiveAttack).toHaveBeenCalledTimes(1);
@@ -58,11 +60,19 @@ test("if attack misses, player can not place again", ()=>{
 });
 test("if attack is invalid, player can place another attack",()=>{
     jest.spyOn(player2.gameboard,'receiveAttack');
-    handleEventListeners.setEventListenersOnGameboard(player2DomGameboard);
+    handleEventListeners.setEventListenersOnGameboard(player2DomGameboard,"PVP");
+    const cellB2 = player2DomGameboard.querySelector(".B2");
+    cellB2.click();
+    expect(player2.gameboard.receiveAttack).toHaveBeenCalledTimes(1);
+    cellB2.click();
+    expect(player2.gameboard.receiveAttack).toHaveBeenCalledTimes(2);
+    const cellB3 = player2DomGameboard.querySelector(".B3");
+    cellB3.click();
+    expect(player2.gameboard.receiveAttack).toHaveBeenCalledTimes(3);
 })
 test("if attack was succesful, player can place another attack",()=>{
     jest.spyOn(player2.gameboard,'receiveAttack');
-    handleEventListeners.setEventListenersOnGameboard(player2DomGameboard);
+    handleEventListeners.setEventListenersOnGameboard(player2DomGameboard,"PVP");
     const cellB2 = player2DomGameboard.querySelector(".B2");
     cellB2.click();
     expect(player2.gameboard.receiveAttack).toHaveBeenCalledTimes(1);
@@ -76,7 +86,7 @@ test("if attack misses, the current players turn ends and the other player can s
     jest.spyOn(player2DomGameboard, 'removeEventListener');
     jest.spyOn(player2DomGameboard,'addEventListener');
     //player1 turn
-    handleEventListeners.setEventListenersOnGameboard(player2DomGameboard);
+    handleEventListeners.setEventListenersOnGameboard(player2DomGameboard,"PVP");
     const cellA5 = player2DomGameboard.querySelector(".A5");
     cellA5.click();
     //player2 turn
@@ -91,7 +101,7 @@ test("if attack misses, the current players turn ends and the other player can s
     expect(player2DomGameboard.addEventListener).toHaveBeenCalledWith('click',expect.any(Function));
 })
 test("if all ships of a player have been sunk, no cells can be clicked any more",()=>{
-    handleEventListeners.setEventListenersOnGameboard(player2DomGameboard);
+    handleEventListeners.setEventListenersOnGameboard(player2DomGameboard,"PVP");
     const cellA5 = player2DomGameboard.querySelector(".A5");
     cellA5.click();
     //player2 turn
@@ -116,4 +126,35 @@ test("if all ships of a player have been sunk, no cells can be clicked any more"
     expect(player1.gameboard.haveAllShipsBeenSunk).toBeTruthy();
     expect(player1DomGameboard.removeEventListener).toHaveBeenCalled();
 })
+
+test("PC player can do automatic attacks", ()=>{
+    jest.spyOn(player1DomGameboard, 'addEventListener');
+    jest.spyOn(player2DomGameboard, 'removeEventListener');
+    handleEventListeners.setEventListenersOnGameboard(player2DomGameboard,"PVC");
+    const cellA5 = player2DomGameboard.querySelector(".A5");
+    cellA5.click();
+    //PC turn
+    player2.automatedAttack(player1.getDomGameboard());
+    expect(player2DomGameboard.removeEventListener).toHaveBeenCalled();
+    expect(player1DomGameboard.addEventListener).toHaveBeenCalledWith('click',expect.any(Function));
+})
+
+test("PC should attack adjacent cells if it's last attack was successful",()=>{
+    handleEventListeners.setEventListenersOnGameboard(player2DomGameboard,"PVP");
+    //Player 1 attacks
+    const cellA5 = player2DomGameboard.querySelector(".A5");
+    cellA5.click();
+    //Simulate PC's (player 2) automated turn
+    const cellA2 = player1DomGameboard.querySelector(".A2");
+    cellA2.click();
+    player2.attackResults.push(["A2",true]);
+    
+    //Expect automated attack to be adjacent
+    handleEventListeners.removeEventListenersOnGameboard(player1DomGameboard,"PVP");
+    handleEventListeners.setEventListenersOnGameboard(player1DomGameboard,"PVC");
+    player2.automatedAttack(player1.getDomGameboard());
+    let allAttackedCells = player2.attackResults.flatMap(entry => entry[0]);
+    expect(allAttackedCells[allAttackedCells.length-1]).toBe("A1", "B2","A3");
+})
+
 

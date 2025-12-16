@@ -6,6 +6,7 @@ export class Gameboard{
     placedShips = [];
     sunkShips = [];
     board;
+    letters = ["A","B","C","D","E","F","G","H","I","J"];
     constructor(){
         this.board =  {
         "A": [ [1], [2], [3], [4], [5], [6], [7], [8], [9], [10] ],
@@ -50,7 +51,6 @@ export class Gameboard{
         }else{
             let smallerRow;
             let largerRow;
-            const letters = ["A","B","C","D","E","F","G","H","I","J"];
 
             if(startRow< endRow){
                 smallerRow = startRow;
@@ -59,15 +59,15 @@ export class Gameboard{
                 smallerRow = endRow;
                 largerRow = startRow;
             }
-            let indexOfSmallerRow = letters.indexOf(smallerRow);
-            let indexOfLargerRow = letters.indexOf(largerRow);
-            return this.getShipRowPath(letters,indexOfSmallerRow,indexOfLargerRow,startColumn)
+            let indexOfSmallerRow = this.letters.indexOf(smallerRow);
+            let indexOfLargerRow = this.letters.indexOf(largerRow);
+            return this.getShipRowPath(indexOfSmallerRow,indexOfLargerRow,startColumn)
         }
     }
-    getShipRowPath(letters,indexOfSmallerRow,indexOfLargerRow,column){
+    getShipRowPath(indexOfSmallerRow,indexOfLargerRow,column){
         let shipPath = [];   
         for(let i = indexOfSmallerRow;i<= indexOfLargerRow;i++){
-                shipPath.push([letters[i],column]);
+                shipPath.push([this.letters[i],column]);
             }
             return shipPath;
     }
@@ -132,6 +132,7 @@ export class Gameboard{
         return this.sunkShips[this.sunkShips.length-1];
     }
     setShipsRandomly(){     
+        if(this.placedShips.length !=0) this.placedShips = [];
         for(let i = 2;i<6;i++){
             let shipPath = this.getRandomAvailableShipPath(i);
             const ship = new Ship(i);
@@ -146,7 +147,6 @@ export class Gameboard{
         }
     }
     getRandomAvailableShipPath(length){
-        const letters = ["A","B","C","D","E","F","G","H","I","J"];
         let shipPath;
         while(true){
             let startRow;
@@ -162,13 +162,13 @@ export class Gameboard{
                 startRow = randomIntForStartRow;
                 startColumn = this.getRandomInt(1,10);
 
-                shipPath = this.getShipRowPath(letters,startRow,startRow+length-1,startColumn);
+                shipPath = this.getShipRowPath(startRow,startRow+length-1,startColumn);
             
             }else if(randomPlacementInt === 2){
                 //Column changes
                 randomIntForStartColumn = this.getRandomInt(1,11-length);
                 startColumn = randomIntForStartColumn;
-                startRow = letters[this.getRandomInt(0,9)];
+                startRow = this.letters[this.getRandomInt(0,9)];
 
                 shipPath = this.getShipColumnPath(startColumn,startColumn+length-1,startRow);
             }
