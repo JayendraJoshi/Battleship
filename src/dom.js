@@ -137,6 +137,33 @@ function showMessageInInfoContainerForPlayerVsPC(player,keyword,shipName = ""){
     }
     
 }
+function renderChooseModeScreen(){
+    const div = document.createElement("div");
+    div.classList.add("choose-mode-screen")
+    const h2 = document.createElement("h2");
+    h2.textContent = "Choose your opponent";
+    const playerButton = document.createElement("button");
+    playerButton.classList.add("player-button");
+    playerButton.textContent="Local Player";
+    const pcButton = document.createElement("button");
+    pcButton.classList.add("pc-button", "active-mode");
+    pcButton.textContent = "Computer";
+    const chooseModeNextButton = document.createElement("button");
+    chooseModeNextButton.textContent = "Next";
+    chooseModeNextButton.classList.add("next-button", "choose-mode");
+    div.appendChild(h2);
+    div.appendChild(pcButton);
+    div.appendChild(playerButton);
+    div.appendChild(chooseModeNextButton);
+    const pageCoverDiv = document.createElement("div");
+    pageCoverDiv.classList.add("page-cover");
+    document.querySelector("main").appendChild(div);
+    document.querySelector("main").appendChild(pageCoverDiv);
+}
+function removeChooseModeScreen(){
+    document.querySelector(".choose-mode-screen").remove();
+    document.querySelector(".page-cover").remove();
+}
 function renderSetupScreen(domGameboard){
     const div = document.createElement("div");
     div.classList.add("setup-screen");
@@ -153,9 +180,9 @@ function renderSetupScreen(domGameboard){
     const shuffleButton = document.createElement("button");
     shuffleButton.textContent="Shuffle";
     shuffleButton.classList.add("shuffle-button");
-    const setupButton = document.createElement("button");
-    setupButton.textContent="Start";
-    setupButton.classList.add("setup-button");
+    const setupNextButton = document.createElement("button");
+    setupNextButton.textContent="Next";
+    setupNextButton.classList.add("next-button", "setup");
     const pageCoverDiv = document.createElement("div");
     pageCoverDiv.classList.add("page-cover");
       domGameboard.classList.add("board-container")
@@ -166,7 +193,7 @@ function renderSetupScreen(domGameboard){
     div.appendChild(intro);
     div.appendChild(shuffleButton);
     div.appendChild(domGameboard);
-    div.appendChild(setupButton);
+    div.appendChild(setupNextButton);
     main.appendChild(pageCoverDiv);
 }
 function removeSetupScreen(){
@@ -208,6 +235,8 @@ return {
     removeSetupScreen,
     showMessageInInfoContainerForPlayerVsPC,
     renderEndScreen,
-    removeEndScreen
+    removeEndScreen,
+    renderChooseModeScreen,
+    removeChooseModeScreen
 }
 }

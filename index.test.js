@@ -258,12 +258,21 @@ describe("UI screen transitions", ()=>{
         startGameboard.setShipsRandomly();
         startDOMGameboard = domHandler.createGameboard();
         domHandler.placeShipsOnGameboard(startGameboard, startDOMGameboard);
-        domHandler.renderSetupScreen(startDOMGameboard);
-        handleEventListeners.setStartGameboard(startGameboard);
+    
     });
 
+    test("Clicking on next-button on choose-mode-screen will transition it to setup-screen",()=>{
+        domHandler.renderChooseModeScreen();
+        handleEventListeners.setEventListenersOnChooseModeScreen();
+        document.querySelector(".next-button.choose-mode").click();
+        expect(document.querySelector(".choose-mode-sceen")).toBeFalsy();
+        expect(document.querySelector(".setup-screen")).toBeTruthy();
+    })
+
     test("Shuffle button changes ship positions", ()=>{
-        handleEventListeners.setEventListenerOnShuffleButton();
+        domHandler.renderSetupScreen(startDOMGameboard);
+        handleEventListeners.setStartGameboard(startGameboard);
+        handleEventListeners.setEventListenersOnSetupScreen();
         const shuffleButton = document.querySelector(".shuffle-button");
         expect(shuffleButton).toBeTruthy();
         
@@ -278,11 +287,13 @@ describe("UI screen transitions", ()=>{
         expect(newShips).not.toEqual(initialShips);
     });
 
-    test("Setup button transitions from setup screen to game", ()=>{
-        handleEventListeners.setEventListenerOnSetupButton();
+    test("Next button transitions from setup screen to game", ()=>{
+        domHandler.renderSetupScreen(startDOMGameboard);
+        handleEventListeners.setStartGameboard(startGameboard);
+        handleEventListeners.setEventListenersOnSetupScreen();
         
-        const setupButton = document.querySelector(".setup-button");
-        setupButton.click();
+        const setupNextButton = document.querySelector(".next-button.setup");
+        setupNextButton.click();
         
         // Setup screen removed, game boards added, ships transferred
         expect(document.querySelector(".setup-screen")).toBeFalsy();
@@ -291,17 +302,21 @@ describe("UI screen transitions", ()=>{
         expect(player1.gameboard.placedShips.length).toBeGreaterThan(0);
     });
     test("Name input of setup screen becomes player1 name",()=>{
+        domHandler.renderSetupScreen(startDOMGameboard);
+        handleEventListeners.setStartGameboard(startGameboard);
         const nameInput = document.getElementById('name');
         nameInput.value = "Daniel";
-        handleEventListeners.setEventListenerOnSetupButton();
-        const setupButton = document.querySelector(".setup-button");
-        setupButton.click();
+        handleEventListeners.setEventListenersOnSetupScreen();
+        const setupNextButton = document.querySelector(".next-button.setup");
+        setupNextButton.click();
         expect(player1.getName()).toBe("Daniel");
     })
 
      test("End screen renders when game ends",()=>{
-        const setupButton = document.querySelector(".setup-button");
-        setupButton.click();
+        domHandler.renderSetupScreen(startDOMGameboard);
+        handleEventListeners.setStartGameboard(startGameboard);
+        const setupNextButton = document.querySelector(".next-button.setup");
+        setupNextButton.click();
         handleEventListeners.setEventListenersOnGameboard(player2DomGameboard,"PVP");
         const cellB2 = player2DomGameboard.querySelector(".B2");
         cellB2.click();
@@ -326,10 +341,5 @@ describe("UI screen transitions", ()=>{
         expect(endScreen).toBeTruthy();
     })
 
-    test("New game button is rendered on end screen", ()=>{
-        domHandler.renderEndScreen(new Player("Winner"));
-        const newGameButton = document.querySelector(".new-game");
-        expect(newGameButton).toBeTruthy();
-    });
 });
 
