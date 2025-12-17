@@ -163,6 +163,28 @@ function removeStartScreen(){
     document.querySelector(".start-screen").remove();
     document.querySelector(".page-cover").remove();
 }
+function renderEndScreen(winner){
+    const div = document.createElement("div");
+    div.classList.add("end-screen");
+    const endH2 = document.createElement("h2");
+    endH2.textContent=`${winner.getName()} won!`;
+
+    const newGameButton = document.createElement("button");
+    newGameButton.textContent="new game";
+    newGameButton.classList.add("new-game")
+
+    const pageCoverDiv = document.createElement("div");
+    pageCoverDiv.classList.add("page-cover");
+    const main = document.querySelector("main");
+    div.appendChild(endH2);
+    div.appendChild(newGameButton)
+    main.appendChild(div);
+    main.appendChild(pageCoverDiv);
+}
+function removeEndScreen(){
+    document.querySelector(".end-screen").remove();
+    document.querySelector(".page-cover").remove();
+}
 
 return {
     createGameboard,
@@ -174,6 +196,8 @@ return {
     renderStartScreen,
     removeShipsFromDOMGameboard,
     removeStartScreen,
-    showMessageInInfoContainerForPlayerVsPC
+    showMessageInInfoContainerForPlayerVsPC,
+    renderEndScreen,
+    removeEndScreen
 }
 }

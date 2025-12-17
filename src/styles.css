@@ -122,3 +122,27 @@ footer{
     background-color:black;
     opacity:0.6;
 }
+.end-screen{
+    position:absolute;
+    background-color:white;
+    display:flex;
+    flex-direction:column;
+    padding:3rem;
+    gap:2rem;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%); 
+    opacity:1;
+    z-index:2;
+    display:flex;
+    flex-direction:column;
+    width:25vw;
+    height:15vh;
+    text-align:center;
+    align-items:center;
+    justify-content:center;
+}
+.end-screen button{
+    width:150px;
+    padding:10px 20px;
+}
