@@ -1,6 +1,7 @@
 import { Player } from "./src/player";
 import { eventListeners } from "./src";
 import { handleDom } from "./src/dom";
+import { Gameboard } from "./src/gameboard";
 import fs from 'fs';
 import path from 'path';
 
@@ -15,7 +16,7 @@ let player2;
 let player1DomGameboard;
 let player2DomGameboard;
 
-describe("Common Event Listener Behavior", ()=>{
+describe("Common gameplay mechanics", ()=>{
     beforeEach(()=>{
         document.documentElement.innerHTML = html;
         player1 = new Player("player1");
@@ -112,33 +113,9 @@ describe("Common Event Listener Behavior", ()=>{
         expect(player1DomGameboard.removeEventListener).toHaveBeenCalled();
     })
 
-    test("End screen renders when game ends",()=>{
-        handleEventListeners.setEventListenersOnGameboard(player2DomGameboard,"PVP");
-        const cellB2 = player2DomGameboard.querySelector(".B2");
-        cellB2.click();
-        const cellB3 = player2DomGameboard.querySelector(".B3");
-        cellB3.click();
-        //Now player 2 lost all ships
-        const cellC1 = player2DomGameboard.querySelector(".C1");
-        cellC1.click();
-        const cellD1 = player2DomGameboard.querySelector(".D1");
-        cellD1.click();
-        const cellE1 = player2DomGameboard.querySelector(".E1");
-        cellE1.click();
-        const cellF1 = player2DomGameboard.querySelector(".F1");
-        cellF1.click();
-        const cellG1 = player2DomGameboard.querySelector(".G1");
-        cellG1.click();
-        const cellH1 = player2DomGameboard.querySelector(".H1");
-        cellH1.click();
-        
-        expect(player2.gameboard.haveAllShipsBeenSunk).toBeTruthy();
-        const endScreen = document.querySelector(".end-screen");
-        expect(endScreen).toBeTruthy();
-    })
 });
 
-describe("PVP Mode", ()=>{
+describe("PVP mode mechanics", ()=>{
     beforeEach(()=>{
         document.documentElement.innerHTML = html;
         player1 = new Player("player1");
@@ -179,7 +156,7 @@ describe("PVP Mode", ()=>{
     })
 });
 
-describe("PVC Mode", ()=>{
+describe("PVC mode mechanics", ()=>{
     beforeEach(()=>{
         document.documentElement.innerHTML = html;
         player1 = new Player("player1");
@@ -254,7 +231,7 @@ describe("PVC Mode", ()=>{
     })
 });
 
-describe("UI Integration", ()=>{
+describe("UI screen transitions", ()=>{
     let domHandler;
     let startGameboard;
     let startDOMGameboard;
@@ -262,13 +239,26 @@ describe("UI Integration", ()=>{
     beforeEach(()=>{
         document.documentElement.innerHTML = html;
         domHandler = handleDom();
-        const { Gameboard } = require("./src/gameboard");
+
+        player1 = new Player("player1");
+        player2 = new Player("player2");
+        player1DomGameboard = domHandler.createGameboard();
+        player2DomGameboard = domHandler.createGameboard();
+        player1.gameboard.setShip("2",["A",2],["A",3]);
+        player1.gameboard.setShip("5",["A",1],["E",1]);
+        player2.gameboard.setShip("2",["B",2],["B",3]);
+        player2.gameboard.setShip("5",["C",1],["H",1]);     
+        player1.setDomGameboard(player1DomGameboard);
+        player2.setDomGameboard(player2DomGameboard);
+        player1.setMode("Human");
+        player2.setMode("PC");
+        handleEventListeners.setPlayers(player1,player2);  
+        
         startGameboard = new Gameboard();
         startGameboard.setShipsRandomly();
         startDOMGameboard = domHandler.createGameboard();
         domHandler.placeShipsOnGameboard(startGameboard, startDOMGameboard);
-        domHandler.renderStartScreen(startDOMGameboard);
-        handleEventListeners = eventListeners();
+        domHandler.renderSetupScreen(startDOMGameboard);
         handleEventListeners.setStartGameboard(startGameboard);
     });
 
@@ -288,28 +278,53 @@ describe("UI Integration", ()=>{
         expect(newShips).not.toEqual(initialShips);
     });
 
-    test("Start button transitions from start screen to game", ()=>{
-        const player1 = new Player("player1");
-        const player2 = new Player("player2");
-        const player1DomGameboard = domHandler.createGameboard();
-        const player2DomGameboard = domHandler.createGameboard();
-        player1.setDomGameboard(player1DomGameboard);
-        player2.setDomGameboard(player2DomGameboard);
-        player1.setMode("Human");
-        player2.setMode("PC");
+    test("Setup button transitions from setup screen to game", ()=>{
+        handleEventListeners.setEventListenerOnSetupButton();
         
-        handleEventListeners.setPlayers(player1, player2);
-        handleEventListeners.setEventListenerOnStartButton();
+        const setupButton = document.querySelector(".setup-button");
+        setupButton.click();
         
-        const startButton = document.querySelector(".start-button");
-        startButton.click();
-        
-        // Start screen removed, game boards added, ships transferred
-        expect(document.querySelector(".start-screen")).toBeFalsy();
+        // Setup screen removed, game boards added, ships transferred
+        expect(document.querySelector(".setup-screen")).toBeFalsy();
         expect(document.querySelector(".player1")).toBeTruthy();
         expect(document.querySelector(".player2")).toBeTruthy();
         expect(player1.gameboard.placedShips.length).toBeGreaterThan(0);
     });
+    test("Name input of setup screen becomes player1 name",()=>{
+        const nameInput = document.getElementById('name');
+        nameInput.value = "Daniel";
+        handleEventListeners.setEventListenerOnSetupButton();
+        const setupButton = document.querySelector(".setup-button");
+        setupButton.click();
+        expect(player1.getName()).toBe("Daniel");
+    })
+
+     test("End screen renders when game ends",()=>{
+        const setupButton = document.querySelector(".setup-button");
+        setupButton.click();
+        handleEventListeners.setEventListenersOnGameboard(player2DomGameboard,"PVP");
+        const cellB2 = player2DomGameboard.querySelector(".B2");
+        cellB2.click();
+        const cellB3 = player2DomGameboard.querySelector(".B3");
+        cellB3.click();
+        //Now player 2 lost all ships
+        const cellC1 = player2DomGameboard.querySelector(".C1");
+        cellC1.click();
+        const cellD1 = player2DomGameboard.querySelector(".D1");
+        cellD1.click();
+        const cellE1 = player2DomGameboard.querySelector(".E1");
+        cellE1.click();
+        const cellF1 = player2DomGameboard.querySelector(".F1");
+        cellF1.click();
+        const cellG1 = player2DomGameboard.querySelector(".G1");
+        cellG1.click();
+        const cellH1 = player2DomGameboard.querySelector(".H1");
+        cellH1.click();
+        
+        expect(player2.gameboard.haveAllShipsBeenSunk).toBeTruthy();
+        const endScreen = document.querySelector(".end-screen");
+        expect(endScreen).toBeTruthy();
+    })
 
     test("New game button is rendered on end screen", ()=>{
         domHandler.renderEndScreen(new Player("Winner"));

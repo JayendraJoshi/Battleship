@@ -21,6 +21,9 @@ export class Player {
   getName() {
     return this.name;
   }
+  setName(name) {
+    this.name = name;
+  }
   setMode(keyword) {
     this.mode = keyword;
   }

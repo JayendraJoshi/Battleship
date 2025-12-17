@@ -10,7 +10,7 @@ export const game = function(){
     const startGameboard = new Gameboard();
 
     //create players and their dom boards
-    const player1 = new Player("Jay");
+    const player1 = new Player("Player1");
     const player2 = new Player("PC");
     const player1DomGameBoard = domHandler.createGameboard();
     const player2DomGameBoard = domHandler.createGameboard();
@@ -23,14 +23,14 @@ export const game = function(){
     startGameboard.setShipsRandomly();
     const startDomGameboard = domHandler.createGameboard();
     domHandler.placeShipsOnGameboard(startGameboard,startDomGameboard);
-    domHandler.renderStartScreen(startDomGameboard);
+    domHandler.renderSetupScreen(startDomGameboard);
 
     //set eventListeners on start screen
    
     eventHandler.setPlayers(player1,player2);
     eventHandler.setStartGameboard(startGameboard);
     eventHandler.setEventListenerOnShuffleButton();
-    eventHandler.setEventListenerOnStartButton();
+    eventHandler.setEventListenerOnSetupButton();
     /*
     domHandler.appendGameboardOnDOM(player1.getDomGameboard());
     domHandler.appendGameboardOnDOM(player2.getDomGameboard());
@@ -65,7 +65,7 @@ export const eventListeners = function(){
     function setEventListenerOnShuffleButton(){
         const shuffleButton = document.querySelector(".shuffle-button");
         if(shuffleButton){
-            const startDOMGameboard = document.querySelector(".start-screen .board-container");
+            const startDOMGameboard = document.querySelector(".setup-screen .board-container");
             shuffleButton.addEventListener("click",function(){
                 startGameboard.setShipsRandomly();
                 domHandler.removeShipsFromDOMGameboard(startDOMGameboard);
@@ -73,12 +73,17 @@ export const eventListeners = function(){
             })
         }
     }
-    function setEventListenerOnStartButton(){
-        const startButton = document.querySelector(".start-button");
-        if(startButton){
-            startButton.addEventListener("click",function(){
-                //remove start screen
-                domHandler.removeStartScreen();
+    function setEventListenerOnSetupButton(){
+        const setupButton = document.querySelector(".setup-button");
+        if(setupButton){
+            setupButton.addEventListener("click",function(){
+                //set Player 1 name
+                const nameInput = document.getElementById('name');
+                const name = nameInput?.value ?? "";
+                if (name) player1.setName(name);
+                
+                //remove setup screen
+                domHandler.removeSetupScreen();
 
                 //ships are placed on gameboard
                 player1.gameboard.placedShips = startGameboard.placedShips;
@@ -147,7 +152,7 @@ export const eventListeners = function(){
                 domHandler.showMessageInInfoContainerForPlayerVsPC(playingPlayer,"missed");
                setTimeout(() => {
                         pcPlayer.automatedAttack(playingPlayer.getDomGameboard(),playingPlayer.getGameboard());
-                },0)
+                },1000)
                 return;
             }
             else if(attackResult === true){
@@ -199,7 +204,7 @@ export const eventListeners = function(){
                 pcPlayer.attackResults.push([coordinateClass,true]);
                setTimeout(() => {
                         pcPlayer.automatedAttack(waitingPlayer.getDomGameboard(),waitingPlayer.getGameboard());
-                },0)
+                },1000)
             return;
             }
         }
@@ -272,7 +277,7 @@ export const eventListeners = function(){
         setPlayers,
         setStartGameboard,
         setEventListenerOnShuffleButton,
-        setEventListenerOnStartButton,
+        setEventListenerOnSetupButton,
         removeEventListenersOnGameboard,
         setEventListenerOnNewGameButton
     }

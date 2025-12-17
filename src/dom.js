@@ -137,30 +137,40 @@ function showMessageInInfoContainerForPlayerVsPC(player,keyword,shipName = ""){
     }
     
 }
-function renderStartScreen(domGameboard){
+function renderSetupScreen(domGameboard){
     const div = document.createElement("div");
-    div.classList.add("start-screen");
+    div.classList.add("setup-screen");
+    const nameInput = document.createElement("input");
+    const nameLabel = document.createElement("label");
+    nameInput.id ='name'
+    nameInput.type='text';
+    nameInput.defaultValue='Player1';
+
+    nameLabel.htmlFor='name';
+    nameLabel.textContent = 'Your name:';
     const intro = document.createElement("h2");
     intro.textContent="Choose your ship placement";
     const shuffleButton = document.createElement("button");
     shuffleButton.textContent="Shuffle";
     shuffleButton.classList.add("shuffle-button");
-    const startButton = document.createElement("button");
-    startButton.textContent="Start";
-    startButton.classList.add("start-button");
+    const setupButton = document.createElement("button");
+    setupButton.textContent="Start";
+    setupButton.classList.add("setup-button");
     const pageCoverDiv = document.createElement("div");
     pageCoverDiv.classList.add("page-cover");
       domGameboard.classList.add("board-container")
     const main = document.querySelector("main");
     main.appendChild(div);
+    div.appendChild(nameLabel);
+    div.appendChild(nameInput);
     div.appendChild(intro);
     div.appendChild(shuffleButton);
     div.appendChild(domGameboard);
-    div.appendChild(startButton);
+    div.appendChild(setupButton);
     main.appendChild(pageCoverDiv);
 }
-function removeStartScreen(){
-    document.querySelector(".start-screen").remove();
+function removeSetupScreen(){
+    document.querySelector(".setup-screen").remove();
     document.querySelector(".page-cover").remove();
 }
 function renderEndScreen(winner){
@@ -193,9 +203,9 @@ return {
     markMissedAttacksOnDOMGameboard,
     markSuccessfulAttacksOnDOMGameboard,
     showMessageOnInfoContainer,
-    renderStartScreen,
+    renderSetupScreen,
     removeShipsFromDOMGameboard,
-    removeStartScreen,
+    removeSetupScreen,
     showMessageInInfoContainerForPlayerVsPC,
     renderEndScreen,
     removeEndScreen
