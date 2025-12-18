@@ -268,11 +268,51 @@ describe("UI screen transitions", ()=>{
         expect(document.querySelector(".choose-mode-sceen")).toBeFalsy();
         expect(document.querySelector(".setup-screen")).toBeTruthy();
     })
+    test("Clicking on next-button on choose-mode while pc-button is active will will open PVC setup-screen",()=>{
+         domHandler.renderChooseModeScreen();
+        handleEventListeners.setEventListenersOnChooseModeScreen();
+        document.querySelector(".next-button.choose-mode").click();
+        expect(document.querySelector(".setup-screen.pvc")).toBeTruthy();
+    })
+
+    test("Clicking  on next-button on choose-mode while player-button is active will will open player1 setup-screen",()=>{
+         domHandler.renderChooseModeScreen();
+         handleEventListeners.setEventListenersOnChooseModeScreen();
+         document.querySelector(".player-button").click();
+        document.querySelector(".next-button.choose-mode").click();
+        expect(document.querySelector(".setup-screen.PVP-player1")).toBeTruthy();
+    })
+
+    test("Clicking on next-button on setup-screen for player1 will transition to setup-screen for player2",()=>{
+        domHandler.renderChooseModeScreen();
+        handleEventListeners.setEventListenersOnChooseModeScreen();
+        document.querySelector(".player-button").click();
+        document.querySelector(".next-button.choose-mode").click();
+        //Should go to player2 setup-screen after the following click
+        document.querySelector(".next-button.setup").click();
+        expect(document.querySelector(".setup-screen.PVP-player2")).toBeTruthy();
+    })
+    test("Clicking on next-button on setup-screen for player2 will transition to game",()=>{
+        jest.spyOn(player2DomGameboard,'addEventListener')
+
+        domHandler.renderChooseModeScreen();
+        handleEventListeners.setEventListenersOnChooseModeScreen();
+        document.querySelector(".player-button").click();
+        document.querySelector(".next-button.choose-mode").click();
+        //Should go to player2 setup-screen after the following click
+        document.querySelector(".next-button.setup").click();
+        // Should go to game after the following click
+        document.querySelector(".next-button.setup").click();
+        expect(document.querySelector(".setup-screen")).toBeFalsy();
+        expect(document.querySelectorAll(".board-container").length).toBe(2);
+        expect(player2DomGameboard.addEventListener).toHaveBeenCalledWith('click',expect.any(Function));
+        
+    })
 
     test("Shuffle button changes ship positions", ()=>{
         domHandler.renderSetupScreen(startDOMGameboard);
         handleEventListeners.setStartGameboard(startGameboard);
-        handleEventListeners.setEventListenersOnSetupScreen();
+        handleEventListeners.setEventListenersOnSetupScreenForPlayerVsComputer();
         const shuffleButton = document.querySelector(".shuffle-button");
         expect(shuffleButton).toBeTruthy();
         
@@ -290,7 +330,7 @@ describe("UI screen transitions", ()=>{
     test("Next button transitions from setup screen to game", ()=>{
         domHandler.renderSetupScreen(startDOMGameboard);
         handleEventListeners.setStartGameboard(startGameboard);
-        handleEventListeners.setEventListenersOnSetupScreen();
+        handleEventListeners.setEventListenersOnSetupScreenForPlayerVsComputer();
         
         const setupNextButton = document.querySelector(".next-button.setup");
         setupNextButton.click();
@@ -306,7 +346,7 @@ describe("UI screen transitions", ()=>{
         handleEventListeners.setStartGameboard(startGameboard);
         const nameInput = document.getElementById('name');
         nameInput.value = "Daniel";
-        handleEventListeners.setEventListenersOnSetupScreen();
+        handleEventListeners.setEventListenersOnSetupScreenForPlayerVsComputer();
         const setupNextButton = document.querySelector(".next-button.setup");
         setupNextButton.click();
         expect(player1.getName()).toBe("Daniel");

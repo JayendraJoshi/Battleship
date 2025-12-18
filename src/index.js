@@ -39,261 +39,365 @@ export const eventListeners = function () {
     startGameboard = board;
   }
   // Handle player vs computer logic
-  const handlePVCLogic = function(){
+  const handlePVCLogic = function () {
     function handleClickOnGameBoardForPlayerVsPC(event) {
-        const pcPlayer = player2;
-        const gameboard = event.currentTarget;
-        if (!event.target.classList.contains("cell")) return;
-        let coordinateClass;
-        for (const className of event.target.classList) {
+      const pcPlayer = player2;
+      const gameboard = event.currentTarget;
+      if (!event.target.classList.contains("cell")) return;
+      let coordinateClass;
+      for (const className of event.target.classList) {
         if (/^[A-J](10|[1-9])$/.test(className)) {
-            coordinateClass = className;
-            break;
+          coordinateClass = className;
+          break;
         }
-        }
-        if (!coordinateClass) return;
-        let coordinateAsArray = [
+      }
+      if (!coordinateClass) return;
+      let coordinateAsArray = [
         coordinateClass[0],
         parseInt(coordinateClass.slice(1), 10),
-        ];
+      ];
 
-        let waitingPlayer;
-        let playingPlayer;
-        if (pcPlayer.getDomGameboard() === gameboard) {
+      let waitingPlayer;
+      let playingPlayer;
+      if (pcPlayer.getDomGameboard() === gameboard) {
         waitingPlayer = pcPlayer;
         playingPlayer = player1;
-        } else {
+      } else {
         waitingPlayer = player1;
         playingPlayer = pcPlayer;
-        }
-        let attackResult = waitingPlayer.gameboard.receiveAttack(coordinateAsArray);
-        if (waitingPlayer === pcPlayer) {
+      }
+      let attackResult =
+        waitingPlayer.gameboard.receiveAttack(coordinateAsArray);
+      if (waitingPlayer === pcPlayer) {
         if (attackResult === false) {
-            removeEventListenersOnGameboard(waitingPlayer.getDomGameboard(), "PVC");
-            setEventListenersOnGameboard(playingPlayer.getDomGameboard(), "PVC");
-            domHandler.markMissedAttacksOnDOMGameboard(
+          removeEventListenersOnGameboard(
+            waitingPlayer.getDomGameboard(),
+            "PVC"
+          );
+          setEventListenersOnGameboard(playingPlayer.getDomGameboard(), "PVC");
+          domHandler.markMissedAttacksOnDOMGameboard(
             waitingPlayer.gameboard,
             waitingPlayer.getDomGameboard()
-            );
-            domHandler.showMessageInInfoContainerForPlayerVsPC(
+          );
+          domHandler.showMessageInInfoContainerForPlayerVsPC(
             playingPlayer,
             "missed"
-            );
-            setTimeout(() => {
+          );
+          setTimeout(() => {
             pcPlayer.automatedAttack(
-                playingPlayer.getDomGameboard(),
-                playingPlayer.getGameboard()
+              playingPlayer.getDomGameboard(),
+              playingPlayer.getGameboard()
             );
-            }, 1000);
-            return;
+          }, 1000);
+          return;
         } else if (attackResult === true) {
-            domHandler.markSuccessfulAttacksOnDOMGameboard(
+          domHandler.markSuccessfulAttacksOnDOMGameboard(
             waitingPlayer.gameboard,
             waitingPlayer.getDomGameboard()
-            );
-            if (waitingPlayer.gameboard.haveAllShipsBeenSunk() === true) {
+          );
+          if (waitingPlayer.gameboard.haveAllShipsBeenSunk() === true) {
             removeEventListenersOnGameboard(
-                waitingPlayer.getDomGameboard(),
-                "PVC"
+              waitingPlayer.getDomGameboard(),
+              "PVC"
             );
             endGame(playingPlayer.getName());
             domHandler.renderEndScreen(playingPlayer);
             setEventListenerOnNewGameButton();
             return;
-            }
-            if (waitingPlayer.gameboard.hasLastAttackSunkAShip()) {
+          }
+          if (waitingPlayer.gameboard.hasLastAttackSunkAShip()) {
             const lastSunkShip = waitingPlayer.gameboard.getLastSunkShip();
             domHandler.showMessageInInfoContainerForPlayerVsPC(
-                playingPlayer,
-                "sunk",
-                lastSunkShip.getName()
+              playingPlayer,
+              "sunk",
+              lastSunkShip.getName()
             );
-            } else {
+          } else {
             domHandler.showMessageInInfoContainerForPlayerVsPC(
-                playingPlayer,
-                "hit"
+              playingPlayer,
+              "hit"
             );
-            }
-            return;
+          }
+          return;
         } else {
-            domHandler.showMessageInInfoContainerForPlayerVsPC(
+          domHandler.showMessageInInfoContainerForPlayerVsPC(
             playingPlayer,
             "null"
-            );
+          );
+          return;
         }
-        } else if (playingPlayer === pcPlayer) {
+      } else if (playingPlayer === pcPlayer) {
         //false
         if (attackResult === false) {
-            removeEventListenersOnGameboard(waitingPlayer.getDomGameboard(), "PVC");
-            setEventListenersOnGameboard(playingPlayer.getDomGameboard(), "PVC");
-            domHandler.markMissedAttacksOnDOMGameboard(
+          removeEventListenersOnGameboard(
+            waitingPlayer.getDomGameboard(),
+            "PVC"
+          );
+          setEventListenersOnGameboard(playingPlayer.getDomGameboard(), "PVC");
+          domHandler.markMissedAttacksOnDOMGameboard(
             waitingPlayer.gameboard,
             waitingPlayer.getDomGameboard()
-            );
-            domHandler.showMessageInInfoContainerForPlayerVsPC(
+          );
+          domHandler.showMessageInInfoContainerForPlayerVsPC(
             playingPlayer,
             "missed"
-            );
-            pcPlayer.attackResults.push([coordinateClass, false]);
+          );
+          pcPlayer.attackResults.push([coordinateClass, false]);
         }
         //true
         else if (attackResult === true) {
-            domHandler.markSuccessfulAttacksOnDOMGameboard(
+          domHandler.markSuccessfulAttacksOnDOMGameboard(
             waitingPlayer.gameboard,
             waitingPlayer.getDomGameboard()
-            );
-            if (waitingPlayer.gameboard.haveAllShipsBeenSunk() === true) {
+          );
+          if (waitingPlayer.gameboard.haveAllShipsBeenSunk() === true) {
             removeEventListenersOnGameboard(
-                waitingPlayer.getDomGameboard(),
-                "PVC"
+              waitingPlayer.getDomGameboard(),
+              "PVC"
             );
             endGame(playingPlayer.getName());
             domHandler.renderEndScreen(playingPlayer);
             setEventListenerOnNewGameButton();
             return;
-            }
-            if (waitingPlayer.gameboard.hasLastAttackSunkAShip()) {
+          }
+          if (waitingPlayer.gameboard.hasLastAttackSunkAShip()) {
             const lastSunkShip = waitingPlayer.gameboard.getLastSunkShip();
             domHandler.showMessageInInfoContainerForPlayerVsPC(
-                playingPlayer,
-                "sunk",
-                lastSunkShip.getName()
+              playingPlayer,
+              "sunk",
+              lastSunkShip.getName()
             );
-            } else {
+          } else {
             domHandler.showMessageInInfoContainerForPlayerVsPC(
-                playingPlayer,
-                "hit"
+              playingPlayer,
+              "hit"
             );
-            }
-            pcPlayer.attackResults.push([coordinateClass, true]);
-            setTimeout(() => {
+          }
+          pcPlayer.attackResults.push([coordinateClass, true]);
+          setTimeout(() => {
             pcPlayer.automatedAttack(
-                waitingPlayer.getDomGameboard(),
-                waitingPlayer.getGameboard()
+              waitingPlayer.getDomGameboard(),
+              waitingPlayer.getGameboard()
             );
-            }, 1000);
-            return;
+          }, 1000);
+          return;
         }
-        }
+      }
     }
-    function setEventListenersOnSetupScreen() {
-        const shuffleButton = document.querySelector(".shuffle-button");
-        if (shuffleButton) {
+    function setEventListenersOnSetupScreenForPlayerVsComputer() {
+      const shuffleButton = document.querySelector(".shuffle-button");
+      if (shuffleButton) {
         const startDOMGameboard = document.querySelector(
-            ".setup-screen .board-container"
+          ".setup-screen .board-container"
         );
+        document.querySelector(".setup-screen").classList.add("pvc");
         shuffleButton.addEventListener("click", function () {
-            startGameboard.setShipsRandomly();
-            domHandler.removeShipsFromDOMGameboard(startDOMGameboard);
-            domHandler.placeShipsOnGameboard(startGameboard, startDOMGameboard);
+          startGameboard.setShipsRandomly();
+          domHandler.removeShipsFromDOMGameboard(startDOMGameboard);
+          domHandler.placeShipsOnGameboard(startGameboard, startDOMGameboard);
         });
-        }
-        const setupNextButton = document.querySelector(".next-button.setup");
-        if (setupNextButton) {
+      }
+      const setupNextButton = document.querySelector(".next-button.setup");
+      if (setupNextButton) {
         setupNextButton.addEventListener("click", function () {
-            //set Player 1 name
-            const nameInput = document.getElementById("name");
-            const name = nameInput?.value ?? "";
-            if (name) player1.setName(name);
+          //set Player 1 name
+          const nameInput = document.getElementById("name");
+          const name = nameInput?.value ?? "";
+          if (name) player1.setName(name);
 
-            //remove setup screen
-            domHandler.removeSetupScreen();
+          //remove setup screen
+          domHandler.removeSetupScreen();
 
-            //ships are placed on gameboard
-            player1.gameboard.placedShips = startGameboard.placedShips;
-            player2.gameboard.setShipsRandomly();
+          //ships are placed on gameboard
+          player1.gameboard.placedShips = startGameboard.placedShips;
+          player2.gameboard.setShipsRandomly();
 
-            //ships of player 1 are displayed on domGameboard
-            domHandler.placeShipsOnGameboard(
+          //ships of player 1 are displayed on domGameboard
+          domHandler.placeShipsOnGameboard(
             player1.gameboard,
             player1.getDomGameboard()
-            );
+          );
 
-            //gameboards are appended on DOM
-            domHandler.appendGameboardOnDOM(player1.getDomGameboard(), "player1");
-            domHandler.appendGameboardOnDOM(player2.getDomGameboard(), "player2");
+          //gameboards are appended on DOM
+          domHandler.appendGameboardOnDOM(player1.getDomGameboard(), "player1");
+          domHandler.appendGameboardOnDOM(player2.getDomGameboard(), "player2");
 
-            //set Event on pc domboard
-            setEventListenersOnGameboard(player2.getDomGameboard(), "PVC");
+          //set Event on pc domboard
+          setEventListenersOnGameboard(player2.getDomGameboard(), "PVC");
 
-            //show start message
-            domHandler.showMessageOnInfoContainer(player1, "start");
+          //show start message
+          domHandler.showMessageOnInfoContainer(player1, "start");
         });
-        }
+      }
     }
     return {
-        handleClickOnGameBoardForPlayerVsPC,
-        setEventListenersOnSetupScreen
+      handleClickOnGameBoardForPlayerVsPC,
+      setEventListenersOnSetupScreenForPlayerVsComputer,
     };
   };
   // Handle player vs player logic
-  const handlePVPLogic = function(){
-     function handleClickOnGameBoard(event) {
-    const gameboard = event.currentTarget;
-    if (!event.target.classList.contains("cell")) return;
-    let coordinateClass;
-    for (const className of event.target.classList) {
-      if (/^[A-J](10|[1-9])$/.test(className)) {
-        coordinateClass = className;
-        break;
+  const handlePVPLogic = function () {
+    function handleClickOnGameBoard(event) {
+      const gameboard = event.currentTarget;
+      if (!event.target.classList.contains("cell")) return;
+      let coordinateClass;
+      for (const className of event.target.classList) {
+        if (/^[A-J](10|[1-9])$/.test(className)) {
+          coordinateClass = className;
+          break;
+        }
       }
-    }
-    if (!coordinateClass) return;
-    let coordinateAsArray = [
-      coordinateClass[0],
-      parseInt(coordinateClass.slice(1), 10),
-    ];
+      if (!coordinateClass) return;
+      let coordinateAsArray = [
+        coordinateClass[0],
+        parseInt(coordinateClass.slice(1), 10),
+      ];
 
-    let waitingPlayer;
-    let playingPlayer;
+      let waitingPlayer;
+      let playingPlayer;
 
-    if (player2.getDomGameboard() === gameboard) {
-      waitingPlayer = player2;
-      playingPlayer = player1;
-    } else {
-      waitingPlayer = player1;
-      playingPlayer = player2;
-    }
-    let attackResult = waitingPlayer.gameboard.receiveAttack(coordinateAsArray);
-    if (attackResult === false) {
-      removeEventListenersOnGameboard(waitingPlayer.getDomGameboard(), "PVP");
-      setEventListenersOnGameboard(playingPlayer.getDomGameboard(), "PVP");
-      domHandler.markMissedAttacksOnDOMGameboard(
-        waitingPlayer.gameboard,
-        waitingPlayer.getDomGameboard()
-      );
-      domHandler.showMessageOnInfoContainer(playingPlayer, "missed");
-      return;
-    } else if (attackResult === true) {
-      domHandler.markSuccessfulAttacksOnDOMGameboard(
-        waitingPlayer.gameboard,
-        waitingPlayer.getDomGameboard()
-      );
-      if (waitingPlayer.gameboard.haveAllShipsBeenSunk() === true) {
+      if (player2.getDomGameboard() === gameboard) {
+        waitingPlayer = player2;
+        playingPlayer = player1;
+      } else {
+        waitingPlayer = player1;
+        playingPlayer = player2;
+      }
+      let attackResult =
+        waitingPlayer.gameboard.receiveAttack(coordinateAsArray);
+      if (attackResult === false) {
         removeEventListenersOnGameboard(waitingPlayer.getDomGameboard(), "PVP");
-        endGame(playingPlayer.getName());
-        domHandler.renderEndScreen(playingPlayer);
-        setEventListenerOnNewGameButton();
+        setEventListenersOnGameboard(playingPlayer.getDomGameboard(), "PVP");
+        domHandler.markMissedAttacksOnDOMGameboard(
+          waitingPlayer.gameboard,
+          waitingPlayer.getDomGameboard()
+        );
+        domHandler.showMessageOnInfoContainer(playingPlayer, "missed");
+        return;
+      } else if (attackResult === true) {
+        domHandler.markSuccessfulAttacksOnDOMGameboard(
+          waitingPlayer.gameboard,
+          waitingPlayer.getDomGameboard()
+        );
+        if (waitingPlayer.gameboard.haveAllShipsBeenSunk() === true) {
+          removeEventListenersOnGameboard(
+            waitingPlayer.getDomGameboard(),
+            "PVP"
+          );
+          endGame(playingPlayer.getName());
+          domHandler.renderEndScreen(playingPlayer);
+          setEventListenerOnNewGameButton();
+          return;
+        }
+        if (waitingPlayer.gameboard.hasLastAttackSunkAShip()) {
+          const lastSunkShip = waitingPlayer.gameboard.getLastSunkShip();
+          domHandler.showMessageOnInfoContainer(
+            playingPlayer,
+            "sunk",
+            lastSunkShip.getName()
+          );
+        } else {
+          domHandler.showMessageOnInfoContainer(playingPlayer, "hit");
+        }
         return;
       }
-      if (waitingPlayer.gameboard.hasLastAttackSunkAShip()) {
-        const lastSunkShip = waitingPlayer.gameboard.getLastSunkShip();
-        domHandler.showMessageOnInfoContainer(
-          playingPlayer,
-          "sunk",
-          lastSunkShip.getName()
-        );
-      } else {
-        domHandler.showMessageOnInfoContainer(playingPlayer, "hit");
-      }
-      return;
+      domHandler.showMessageOnInfoContainer(playingPlayer, "null");
     }
-    domHandler.showMessageOnInfoContainer(playingPlayer, "null");
-  }
-  //to do: create a single 'setEventListenersOnSetupScreen" that is differently executed based on the player parameter
-  return{
-    handleClickOnGameBoard
-  }
+    function setEventListenersOnSetupScreenForPlayer1() {
+      const nameInput = document.getElementById("name");
+      if (nameInput) nameInput.value = "Player1";
+      const shuffleButton = document.querySelector(".shuffle-button");
+      document.querySelector(".setup-screen").classList.add("PVP-player1");
+      if (shuffleButton) {
+        const startDOMGameboard = document.querySelector(
+          ".setup-screen .board-container"
+        );
+        shuffleButton.addEventListener("click", function () {
+          startGameboard.setShipsRandomly();
+          domHandler.removeShipsFromDOMGameboard(startDOMGameboard);
+          domHandler.placeShipsOnGameboard(startGameboard, startDOMGameboard);
+        });
+      }
+      const setupNextButton = document.querySelector(".next-button.setup");
+      if (setupNextButton) {
+        setupNextButton.addEventListener("click", function () {
+          //set Player 1 name
+          const nameInput = document.getElementById("name");
+          const name = nameInput?.value ?? "Player1";
+          if (name) player1.setName(name);
+
+          //remove setup screen
+          domHandler.removeSetupScreen();
+
+          //ships are placed on gameboard
+          player1.gameboard.placedShips = startGameboard.placedShips;
+
+          //ships of player 1 are displayed on domGameboard
+          domHandler.placeShipsOnGameboard(
+            player1.gameboard,
+            player1.getDomGameboard()
+          );
+          //render player2 setup screen
+           startGameboard = new Gameboard();
+          startGameboard.setShipsRandomly();
+          const startDomGameboard = domHandler.createGameboard();
+          domHandler.placeShipsOnGameboard(startGameboard, startDomGameboard);
+          domHandler.renderSetupScreen(startDomGameboard);
+          setEventListenersOnSetupScreenForPlayer2();
+        });
+      }
+    }
+    function setEventListenersOnSetupScreenForPlayer2(){
+      //set default value for Player2 input
+      const nameInput = document.getElementById("name");
+      if (nameInput) nameInput.value = "Player2";
+      
+      const shuffleButton = document.querySelector(".shuffle-button");
+      document.querySelector(".setup-screen").classList.add("PVP-player2");
+      if (shuffleButton) {
+        const startDOMGameboard = document.querySelector(
+          ".setup-screen .board-container"
+        );
+        shuffleButton.addEventListener("click", function () {
+          startGameboard.setShipsRandomly();
+          domHandler.removeShipsFromDOMGameboard(startDOMGameboard);
+          domHandler.placeShipsOnGameboard(startGameboard, startDOMGameboard);
+        });
+      }
+      const setupNextButton = document.querySelector(".next-button.setup");
+      if (setupNextButton) {
+        setupNextButton.addEventListener("click", function () {
+          //set Player 2 name
+          const nameInput = document.getElementById("name");
+          const name = nameInput?.value ?? "Player2";
+          if (name) player2.setName(name);
+
+          //remove setup screen
+          domHandler.removeSetupScreen();
+
+          //ships are placed on gameboard
+          player2.gameboard.placedShips = startGameboard.placedShips;
+
+          //ships of player 2 are displayed on domGameboard
+          domHandler.placeShipsOnGameboard(
+            player2.gameboard,
+            player2.getDomGameboard()
+          );
+
+          //render player
+        });
+      }
+      domHandler.appendGameboardOnDOM(player1.getDomGameboard());
+      domHandler.appendGameboardOnDOM(player2.getDomGameboard());
+      setEventListenersOnGameboard(player2.getDomGameboard(),"PVP");
+      domHandler.showMessageOnInfoContainer(player1, "start");
+    }
+
+    return {
+      handleClickOnGameBoard,
+      setEventListenersOnSetupScreenForPlayer1,
+      setEventListenersOnSetupScreenForPlayer2
+    };
   };
   //Handle common logic
   function setEventListenersOnChooseModeScreen() {
@@ -320,7 +424,11 @@ export const eventListeners = function () {
       domHandler.placeShipsOnGameboard(startGameboard, startDomGameboard);
 
       domHandler.renderSetupScreen(startDomGameboard);
-      setEventListenersOnSetupScreen();
+      if (playerButton.classList.contains("active-mode")) {
+        setEventListenersOnSetupScreenForPlayer1();
+      } else if (pcButton.classList.contains("active-mode")) {
+        setEventListenersOnSetupScreenForPlayerVsComputer();
+      }
     });
   }
   function setEventListenersOnGameboard(gameboard, mode) {
@@ -363,9 +471,8 @@ export const eventListeners = function () {
     game();
   }
   //Get functions from inner scope
-  const {handleClickOnGameBoardForPlayerVsPC} = handlePVCLogic();
-  const {setEventListenersOnSetupScreen} = handlePVCLogic();
-  const {handleClickOnGameBoard} = handlePVPLogic();
+  const { handleClickOnGameBoardForPlayerVsPC, setEventListenersOnSetupScreenForPlayerVsComputer } = handlePVCLogic();
+  const { handleClickOnGameBoard, setEventListenersOnSetupScreenForPlayer1, setEventListenersOnSetupScreenForPlayer2 } = handlePVPLogic();
 
   return {
     setEventListenersOnGameboard,
@@ -376,7 +483,7 @@ export const eventListeners = function () {
     removeEventListenersOnGameboard,
     setEventListenerOnNewGameButton,
     setEventListenersOnChooseModeScreen,
-    setEventListenersOnSetupScreen,
+    setEventListenersOnSetupScreenForPlayerVsComputer,
   };
 };
 

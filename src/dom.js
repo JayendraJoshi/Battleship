@@ -169,10 +169,8 @@ function renderSetupScreen(domGameboard){
     div.classList.add("setup-screen");
     const nameInput = document.createElement("input");
     const nameLabel = document.createElement("label");
-    nameInput.id ='name'
+    nameInput.id ='name';
     nameInput.type='text';
-    nameInput.defaultValue='Player1';
-
     nameLabel.htmlFor='name';
     nameLabel.textContent = 'Your name:';
     const intro = document.createElement("h2");
@@ -185,7 +183,7 @@ function renderSetupScreen(domGameboard){
     setupNextButton.classList.add("next-button", "setup");
     const pageCoverDiv = document.createElement("div");
     pageCoverDiv.classList.add("page-cover");
-      domGameboard.classList.add("board-container")
+    domGameboard.classList.add("board-container");
     const main = document.querySelector("main");
     main.appendChild(div);
     div.appendChild(nameLabel);
