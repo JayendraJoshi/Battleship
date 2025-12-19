@@ -46,13 +46,22 @@ function placeShipsOnGameboard(gameboard,domboard){
     
     classNamesOfShipCoordinates.forEach(className => {
         const cell = Array.from(allCells).find(cell=> cell.classList.contains(className));
-       cell.style.backgroundColor = "rgb(128, 128, 128)";
+        if(cell.style.backgroundColor !== "rgb(29, 137, 187, 1)" && cell.style.backgroundColor !=="rgb(200, 40, 35)" ){
+            cell.style.backgroundColor = "rgb(128, 128, 128)";
+        }
+       
     })
 }
 function removeShipsFromDOMGameboard(domGameboard){
     const allCells = domGameboard.querySelectorAll(".cell");
     allCells.forEach(cell =>{
         cell.style.backgroundColor ="white";
+    })
+}
+function hideShipPlacementFromDOMGameboard(domGameboard){
+     const allCells = domGameboard.querySelectorAll(".cell");
+    allCells.forEach(cell =>{
+       if(cell.style.backgroundColor=== "rgb(128, 128, 128)") cell.style.backgroundColor ="white";
     })
 }
 function appendGameboardOnDOM(gameboard,playerName){
@@ -220,6 +229,26 @@ function removeEndScreen(){
     document.querySelector(".end-screen").remove();
     document.querySelector(".page-cover").remove();
 }
+function renderPassDeviceScreen(player){
+const div = document.createElement("div");
+div.classList.add("pass-device-screen");
+const button = document.createElement("button");
+button.textContent="Ready";
+button.classList.add("ready-button");
+const h1 = document.createElement("h1");
+h1.textContent= `Pass device to ${player.getName()}`;
+div.appendChild(h1);
+div.appendChild(button);
+document.querySelector("main").appendChild(div);
+
+const pageCoverDiv = document.createElement("div");
+    pageCoverDiv.classList.add("page-cover");
+
+document.querySelector("main").appendChild(pageCoverDiv);
+}
+function removePassDeviceScreen(){
+    document.querySelector(".pass-device-screen").remove();
+}
 
 return {
     createGameboard,
@@ -235,6 +264,9 @@ return {
     renderEndScreen,
     removeEndScreen,
     renderChooseModeScreen,
-    removeChooseModeScreen
+    removeChooseModeScreen,
+    renderPassDeviceScreen,
+    removePassDeviceScreen,
+    hideShipPlacementFromDOMGameboard
 }
 }

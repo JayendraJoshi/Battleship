@@ -159,63 +159,92 @@ describe("DomGameboard", () => {
     expect(document.querySelector(".board-container")).toBeTruthy();
   });
 });
-describe("Setup screen",()=>{
-
-})
-describe("Choose-mode screen",()=>{
-    beforeEach(() => {
+describe("Setup screen", () => {});
+describe("Choose-mode screen", () => {
+  beforeEach(() => {
     domHandler = handleDom();
     player1 = new Player("player1");
     player2 = new Player("player2");
     eventHandler = eventListeners();
     document.documentElement.innerHTML = html;
-    });
-     test("Choose-mode screen is rendered",()=>{
-        domHandler.renderChooseModeScreen();
-        const chooseModeScreen = document.querySelector(".choose-mode-screen");
-        expect(chooseModeScreen).toBeTruthy();
-    })
-    test("Choose-mode screen has all of it's children",()=>{
-          domHandler.renderChooseModeScreen();
-        const chooseModeScreen = document.querySelector(".choose-mode-screen");
-        expect(chooseModeScreen.querySelector("h2")).toBeTruthy();
-        expect(chooseModeScreen.querySelector(".pc-button")).toBeTruthy();
-        expect(chooseModeScreen.querySelector(".player-button")).toBeTruthy();
-        expect(chooseModeScreen.querySelector(".next-button.choose-mode")).toBeTruthy();
-    })
-    test("Page-cover class is active while choose-mode screen is rendered",()=>{
-          domHandler.renderChooseModeScreen();
-          expect(document.querySelector(".page-cover")).toBeTruthy();
-    })
-    test("Active-mode class is on player-button as default",()=>{
-        domHandler.renderChooseModeScreen();
-        expect(document.querySelector(".pc-button").classList.contains("active-mode")).toBe(true);
-        expect(document.querySelector(".player-button").classList.contains("active-mode")).toBe(false);
-    })
-    test("Active class is added on the last button that is clicked and removed from the other",()=>{
-        domHandler.renderChooseModeScreen();
-        eventHandler.setEventListenersOnChooseModeScreen();
-        expect(document.querySelector(".pc-button").classList.contains("active-mode")).toBe(true);
-        expect(document.querySelector(".player-button").classList.contains("active-mode")).toBe(false);
-        document.querySelector(".player-button").click();
+  });
+  test("Choose-mode screen is rendered", () => {
+    domHandler.renderChooseModeScreen();
+    const chooseModeScreen = document.querySelector(".choose-mode-screen");
+    expect(chooseModeScreen).toBeTruthy();
+  });
+  test("Choose-mode screen has all of it's children", () => {
+    domHandler.renderChooseModeScreen();
+    const chooseModeScreen = document.querySelector(".choose-mode-screen");
+    expect(chooseModeScreen.querySelector("h2")).toBeTruthy();
+    expect(chooseModeScreen.querySelector(".pc-button")).toBeTruthy();
+    expect(chooseModeScreen.querySelector(".player-button")).toBeTruthy();
+    expect(
+      chooseModeScreen.querySelector(".next-button.choose-mode")
+    ).toBeTruthy();
+  });
+  test("Page-cover class is active while choose-mode screen is rendered", () => {
+    domHandler.renderChooseModeScreen();
+    expect(document.querySelector(".page-cover")).toBeTruthy();
+  });
+  test("Active-mode class is on player-button as default", () => {
+    domHandler.renderChooseModeScreen();
+    expect(
+      document.querySelector(".pc-button").classList.contains("active-mode")
+    ).toBe(true);
+    expect(
+      document.querySelector(".player-button").classList.contains("active-mode")
+    ).toBe(false);
+  });
+  test("Active class is added on the last button that is clicked and removed from the other", () => {
+    domHandler.renderChooseModeScreen();
+    eventHandler.setEventListenersOnChooseModeScreen();
+    expect(
+      document.querySelector(".pc-button").classList.contains("active-mode")
+    ).toBe(true);
+    expect(
+      document.querySelector(".player-button").classList.contains("active-mode")
+    ).toBe(false);
+    document.querySelector(".player-button").click();
 
-        //active class should now be on player button and not on pc button
-        expect(document.querySelector(".pc-button").classList.contains("active-mode")).toBe(false);
-        expect(document.querySelector(".player-button").classList.contains("active-mode")).toBe(true);
-
-    })
-})
-describe("End screen",()=>{
-     beforeEach(() => {
+    //active class should now be on player button and not on pc button
+    expect(
+      document.querySelector(".pc-button").classList.contains("active-mode")
+    ).toBe(false);
+    expect(
+      document.querySelector(".player-button").classList.contains("active-mode")
+    ).toBe(true);
+  });
+});
+describe("Pass-device screen", () => {
+  beforeEach(() => {
     domHandler = handleDom();
     player1 = new Player("player1");
     player2 = new Player("player2");
     eventHandler = eventListeners();
     document.documentElement.innerHTML = html;
-    });
-     test("New game button is rendered on end screen", ()=>{
-        domHandler.renderEndScreen(new Player("Winner"));
-        const newGameButton = document.querySelector(".new-game");
-        expect(newGameButton).toBeTruthy();
-    });
-})
+  });
+  test("Pass-device screen is rendered", () => {
+    domHandler.renderPassDeviceScreen(player2);
+    expect(document.querySelector(".pass-device-screen")).toBeTruthy();
+  });
+  test("Pass-device screen is removed", () => {
+    domHandler.renderPassDeviceScreen(player2);
+    domHandler.removePassDeviceScreen();
+    expect(document.querySelector(".pass-device-screen")).toBeFalsy();
+  });
+});
+describe("End screen", () => {
+  beforeEach(() => {
+    domHandler = handleDom();
+    player1 = new Player("player1");
+    player2 = new Player("player2");
+    eventHandler = eventListeners();
+    document.documentElement.innerHTML = html;
+  });
+  test("New game button is rendered on end screen", () => {
+    domHandler.renderEndScreen(new Player("Winner"));
+    const newGameButton = document.querySelector(".new-game");
+    expect(newGameButton).toBeTruthy();
+  });
+});
