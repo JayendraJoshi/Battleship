@@ -30,6 +30,7 @@ function createGameboard(){
             column.appendChild(cell);
             cell.classList.add("cell");
             cell.classList.add(letters[i]+j);
+            cell.style.backgroundColor = "white";
         }
         board.appendChild(column);
     }
@@ -249,6 +250,15 @@ document.querySelector("main").appendChild(pageCoverDiv);
 function removePassDeviceScreen(){
     document.querySelector(".pass-device-screen").remove();
 }
+function renderEndTurnButton(){
+    const button = document.createElement("button");
+    button.classList.add("end-turn-button");
+    button.textContent="End Turn";
+    document.querySelector("main").appendChild(button);
+}
+function removeEndTurnButton(){
+    document.querySelector(".end-turn-button").remove();
+}
 
 return {
     createGameboard,
@@ -267,6 +277,8 @@ return {
     removeChooseModeScreen,
     renderPassDeviceScreen,
     removePassDeviceScreen,
-    hideShipPlacementFromDOMGameboard
+    hideShipPlacementFromDOMGameboard,
+    renderEndTurnButton,
+    removeEndTurnButton
 }
 }

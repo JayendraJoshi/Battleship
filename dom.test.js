@@ -233,6 +233,15 @@ describe("Pass-device screen", () => {
     domHandler.removePassDeviceScreen();
     expect(document.querySelector(".pass-device-screen")).toBeFalsy();
   });
+  test("End-turn button is rendered",()=>{
+    domHandler.renderEndTurnButton();
+    expect(document.querySelector(".end-turn-button")).toBeTruthy();
+  })
+  test("End-turn-button can be removed",()=>{
+    domHandler.renderEndTurnButton();
+    domHandler.removeEndTurnButton();
+    expect(document.querySelector(".end-turn-button")).toBeFalsy();
+  })
 });
 describe("End screen", () => {
   beforeEach(() => {

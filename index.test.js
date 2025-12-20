@@ -357,7 +357,7 @@ describe("PVP mode mechanics", () => {
       //should now be at player2 setup screen
       expect(document.querySelector(".setup-screen.PVP-player2"))
     })
-    test("Clicking on next-button on setup-screen for player2 will transition to game", () => {
+    test("Clicking on next-button on setup-screen for player2 will transition to pass-device-screen for player1", () => {
       jest.spyOn(player2DomGameboard, "addEventListener");
 
       domHandler.renderChooseModeScreen();
@@ -373,11 +373,32 @@ describe("PVP mode mechanics", () => {
       document.querySelector(".next-button.setup").click();
       // Should be at game now
       expect(document.querySelector(".setup-screen")).toBeFalsy();
+      /*
       expect(document.querySelectorAll(".board-container").length).toBe(2);
       expect(player2DomGameboard.addEventListener).toHaveBeenCalledWith(
         "click",
         expect.any(Function)
-      );
+      );*/
+      expect(document.querySelector(".pass-device-screen")).toBeTruthy();
+    })
+    test("End-turn-button appears after the turn has ended",()=>{
+       domHandler.renderChooseModeScreen();
+      handleEventListeners.setEventListenersOnChooseModeScreen();
+      document.querySelector(".player-button").click();
+      document.querySelector(".next-button.choose-mode").click();
+      document.querySelector(".ready-button").click();
+      //player1 setup
+      document.querySelector(".next-button.setup").click();
+      //player2 pass device screen
+      document.querySelector(".ready-button").click();
+      // player 2 setup
+      document.querySelector(".next-button.setup").click();
+      document.querySelector(".ready-button").click();
+      // Misses an attack
+      const cellB4 = player2DomGameboard.querySelector(".B4");
+      cellB4.click();
+      expect(document.querySelector(".end-turn-button")).toBeTruthy();
+
     })
     test("After missing an attack and clicking the 'turn-end button, pass-device-screen apears",()=>{
       domHandler.renderChooseModeScreen();
@@ -391,11 +412,33 @@ describe("PVP mode mechanics", () => {
       document.querySelector(".ready-button").click();
       // player 2 setup
       document.querySelector(".next-button.setup").click();
+      document.querySelector(".ready-button").click();
       // Misses an attack
       const cellB4 = player2DomGameboard.querySelector(".B4");
       cellB4.click();
       document.querySelector(".end-turn-button").click();
       expect(document.querySelector(".pass-device-screen")).toBeTruthy();
+    })
+    test("After clicking end-turn-button it is removed",()=>{
+      domHandler.renderChooseModeScreen();
+      handleEventListeners.setEventListenersOnChooseModeScreen();
+      document.querySelector(".player-button").click();
+      document.querySelector(".next-button.choose-mode").click();
+      document.querySelector(".ready-button").click();
+      //player1 setup
+      document.querySelector(".next-button.setup").click();
+      //player2 pass device screen
+      document.querySelector(".ready-button").click();
+      // player 2 setup
+      document.querySelector(".next-button.setup").click();
+      document.querySelector(".ready-button").click();
+      // Misses an attack
+      const cellB4 = player2DomGameboard.querySelector(".B4");
+      cellB4.click();
+      document.querySelector(".end-turn-button").click();
+      document.querySelector(".ready-button").click();
+      //should now be at player 2, whose turn isnt over yet
+      expect(document.querySelector(".end-turn-button")).toBeFalsy();
     })
     test("Gameboard of player 2 is not visible on gamestart",()=>{
       domHandler.renderChooseModeScreen();
@@ -409,10 +452,15 @@ describe("PVP mode mechanics", () => {
       document.querySelector(".ready-button").click();
       // player 2 setup
       document.querySelector(".next-button.setup").click();
-      // Should be at game now
-      
-      
+      document.querySelector(".ready-button").click();
+      //  player 2 gamebaord cells should not be visible
+      const cellsOfPlayer2 = Array.from(player2DomGameboard.querySelectorAll('.cell'));
+    expect(cellsOfPlayer2.every(cell => cell.style.backgroundColor === "white")).toBe(true);
+      // player 1 gamebaord cells should be visible
+    const cellsOfPlayer1 = Array.from(player1DomGameboard.querySelectorAll(".cell"));
+    expect(cellsOfPlayer1.some(cell => cell.style.backgroundColor !== "white")).toBe(true);
     })
+    
   });
 });
 describe("PVC mode mechanics", () => {

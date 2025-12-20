@@ -327,18 +327,33 @@ export const eventListeners = function () {
           if (name) player2.setName(name);
 
           //remove setup screen
-          domHandler.removeSetupScreen();
+          //domHandler.removeSetupScreen();
 
           //ships are placed on gameboard
           player2.gameboard.placedShips = startGameboard.placedShips;
 
-          domHandler.appendGameboardOnDOM(player1.getDomGameboard());
-          domHandler.appendGameboardOnDOM(player2.getDomGameboard());
-          setEventListenersOnGameboard(player2.getDomGameboard(), "PVP");
-          domHandler.showMessageOnInfoContainer(player1, "start");
+          domHandler.placeShipsOnGameboard(
+            player2.gameboard,
+            player2.getDomGameboard()
+          );
+          transitionFromPlayerSetupScreenToPlayer1PassDeviceScreen();
           
         });
       }
+    }
+    function transitionFromPlayerSetupScreenToPlayer1PassDeviceScreen(){
+      domHandler.removeSetupScreen();
+      domHandler.renderPassDeviceScreen(player1);
+      setEventListenerOnReadyButton(transitionFromPlayer2SetupScreenToGame);
+    }
+    function transitionFromPlayer2SetupScreenToGame(){
+          domHandler.removePassDeviceScreen();
+          document.querySelector(".page-cover").remove();
+          domHandler.hideShipPlacementFromDOMGameboard(player2.getDomGameboard());
+          domHandler.appendGameboardOnDOM(player1.getDomGameboard(),"Player1");
+          domHandler.appendGameboardOnDOM(player2.getDomGameboard(),"Player2");
+          setEventListenersOnGameboard(player2.getDomGameboard(), "PVP");
+          domHandler.showMessageOnInfoContainer(player1, "start");
     }
     function setEventListenerOnNextButton(callback) {
       const nextButton = document.querySelector(".next-button.setup");
@@ -359,11 +374,21 @@ export const eventListeners = function () {
       domHandler.placeShipsOnGameboard(waitingPlayer.gameboard,waitingPlayer.getDomGameboard());
       
       domHandler.markMissedAttacksOnDOMGameboard(playingPlayer.gameboard, playingPlayer.getDomGameboard());
-  domHandler.markSuccessfulAttacksOnDOMGameboard(playingPlayer.gameboard, playingPlayer.getDomGameboard());
+      domHandler.markSuccessfulAttacksOnDOMGameboard(playingPlayer.gameboard, playingPlayer.getDomGameboard());
   
-  // Re-mark attacks on waiting player's board (since placeShipsOnGameboard overwrote them)
-  domHandler.markMissedAttacksOnDOMGameboard(waitingPlayer.gameboard, waitingPlayer.getDomGameboard());
-  domHandler.markSuccessfulAttacksOnDOMGameboard(waitingPlayer.gameboard, waitingPlayer.getDomGameboard());
+    domHandler.markMissedAttacksOnDOMGameboard(waitingPlayer.gameboard, waitingPlayer.getDomGameboard());
+    domHandler.markSuccessfulAttacksOnDOMGameboard(waitingPlayer.gameboard, waitingPlayer.getDomGameboard());
+    }
+    function setEventListenerOnEndTurnButton(playingPlayer, waitingPlayer){
+      const endTurnButton = document.querySelector(".end-turn-button");
+      if(endTurnButton){
+        endTurnButton.addEventListener("click",function(){
+        domHandler.renderPassDeviceScreen(waitingPlayer);
+        domHandler.hideShipPlacementFromDOMGameboard(playingPlayer.getDomGameboard());
+        setEventListenerOnReadyButton(()=>switchGameboardVisibility(waitingPlayer,playingPlayer));
+        domHandler.removeEndTurnButton();
+        })
+      }
     }
      function handleClickOnGameBoard(event) {
       const gameboard = event.currentTarget;
@@ -401,9 +426,9 @@ export const eventListeners = function () {
           waitingPlayer.getDomGameboard()
         );
         domHandler.showMessageOnInfoContainer(playingPlayer, "missed");
-        domHandler.renderPassDeviceScreen(waitingPlayer);
-        domHandler.hideShipPlacementFromDOMGameboard(playingPlayer.getDomGameboard());
-        setEventListenerOnReadyButton(()=>switchGameboardVisibility(waitingPlayer,playingPlayer));
+        
+        domHandler.renderEndTurnButton();
+        setEventListenerOnEndTurnButton(playingPlayer,waitingPlayer);
         return;
       } else if (attackResult === true) {
         domHandler.markSuccessfulAttacksOnDOMGameboard(
@@ -434,8 +459,7 @@ export const eventListeners = function () {
       }
       domHandler.showMessageOnInfoContainer(playingPlayer, "null");
     }
-    // todo: create one function thats sets an eventlistener on ready button of pass device screen and accepts a call back function
-    // create distinct fucntions to transition from player1 setup to player2 setup, player2 setup to player1 turn, and than turn to turn
+   
     return {
       handleClickOnGameBoard,
       setEventListenersOnSetupScreenForPlayer1,
