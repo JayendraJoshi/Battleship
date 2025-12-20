@@ -1,6 +1,5 @@
 import "./styles.css";
 import { Player } from "./player";
-import { Gameboard } from "./gameboard";
 import { handleDom } from "./dom";
 
 export const game = function () {
@@ -10,10 +9,10 @@ export const game = function () {
   //Create players and their DOMBoards (board instances are created inside the constructor)
   const player1 = new Player("Player1");
   const player2 = new Player("Player2");
-  const player1DomGameBoard = domHandler.createGameboard();
-  const player2DomGameBoard = domHandler.createGameboard();
-  player1.setDomGameboard(player1DomGameBoard);
-  player2.setDomGameboard(player2DomGameBoard);
+  const player1DomGameboard = domHandler.createDomGameboard();
+  const player2DomGameboard = domHandler.createDomGameboard();
+  player1.setDomGameboard(player1DomGameboard);
+  player2.setDomGameboard(player2DomGameboard);
   player1.setMode("Human");
 
   //Set players for EventHandler
@@ -28,14 +27,10 @@ export const eventListeners = function () {
   const domHandler = handleDom();
   let player1;
   let player2;
-  let startGameboard;
   //Set eventListener function properties
   function setPlayers(p1, p2) {
     player1 = p1;
     player2 = p2;
-  }
-  function setStartGameboard(board) {
-    startGameboard = board;
   }
   // Handle player vs computer logic
   const handlePVCLogic = function () {
@@ -188,14 +183,14 @@ export const eventListeners = function () {
       if (nameInput) nameInput.value = "Player1";
       const shuffleButton = document.querySelector(".shuffle-button");
       if (shuffleButton) {
-        const startDOMGameboard = document.querySelector(
+        const startDomGameboard = document.querySelector(
           ".setup-screen .board-container"
         );
         document.querySelector(".setup-screen").classList.add("pvc");
         shuffleButton.addEventListener("click", function () {
-          startGameboard.setShipsRandomly();
-          domHandler.removeShipsFromDOMGameboard(startDOMGameboard);
-          domHandler.placeShipsOnGameboard(startGameboard, startDOMGameboard);
+          player1.gameboard.setShipsRandomly();
+          domHandler.removeShipsFromDOMGameboard(startDomGameboard);
+          domHandler.placeShipsOnGameboard(player1.gameboard, startDomGameboard);
         });
       }
       const setupNextButton = document.querySelector(".next-button.setup");
@@ -207,7 +202,6 @@ export const eventListeners = function () {
 
           domHandler.removeSetupScreen();
 
-          player1.gameboard.placedShips = startGameboard.placedShips;
           player2.gameboard.setShipsRandomly();
 
           domHandler.placeShipsOnGameboard(
@@ -240,12 +234,11 @@ export const eventListeners = function () {
     function transitionFromPlayer1PassDeviceToPlayer1SetupScreen(){
       domHandler.removePassDeviceScreen();
       document.querySelector(".page-cover").remove();
-      startGameboard = new Gameboard();
-            startGameboard.setShipsRandomly();
-            const startDomGameboard = domHandler.createGameboard();
-            domHandler.placeShipsOnGameboard(startGameboard, startDomGameboard);
-        domHandler.renderSetupScreen(startDomGameboard);
-    setEventListenersOnSetupScreenForPlayer1();
+      player1.gameboard.setShipsRandomly();
+      const startDomGameboard = domHandler.createDomGameboard();
+      domHandler.placeShipsOnGameboard(player1.gameboard, startDomGameboard);
+      domHandler.renderSetupScreen(startDomGameboard);
+      setEventListenersOnSetupScreenForPlayer1();
      
     }
      function transitionFromPlayer1SetupToPlayer2PassDeviceScreen(){
@@ -256,12 +249,11 @@ export const eventListeners = function () {
     function transitionFromPlayer2PassDeviceToPlayer2SetupScreen(){
       domHandler.removePassDeviceScreen();
       document.querySelector(".page-cover").remove();
-      startGameboard = new Gameboard();
-          startGameboard.setShipsRandomly();
-          const startDomGameboard = domHandler.createGameboard();
-          domHandler.placeShipsOnGameboard(startGameboard, startDomGameboard);
-          domHandler.renderSetupScreen(startDomGameboard);
-          setEventListenersOnSetupScreenForPlayer2();
+      player2.gameboard.setShipsRandomly();
+      const startDomGameboard = domHandler.createDomGameboard();
+      domHandler.placeShipsOnGameboard(player2.gameboard, startDomGameboard);
+      domHandler.renderSetupScreen(startDomGameboard);
+      setEventListenersOnSetupScreenForPlayer2();
     }
     function setEventListenersOnSetupScreenForPlayer1() {
       const nameInput = document.getElementById("name");
@@ -269,13 +261,13 @@ export const eventListeners = function () {
       const shuffleButton = document.querySelector(".shuffle-button");
       document.querySelector(".setup-screen").classList.add("PVP-player1");
       if (shuffleButton) {
-        const startDOMGameboard = document.querySelector(
+        const startDomGameboard = document.querySelector(
           ".setup-screen .board-container"
         );
         shuffleButton.addEventListener("click", function () {
           startGameboard.setShipsRandomly();
-          domHandler.removeShipsFromDOMGameboard(startDOMGameboard);
-          domHandler.placeShipsOnGameboard(startGameboard, startDOMGameboard);
+          domHandler.removeShipsFromDOMGameboard(startDomGameboard);
+          domHandler.placeShipsOnGameboard(startGameboard, startDomGameboard);
         });
       }
       const setupNextButton = document.querySelector(".next-button.setup");
@@ -286,9 +278,6 @@ export const eventListeners = function () {
           const nameInput = document.getElementById("name");
           const name = nameInput?.value ?? "Player1";
           if (name) player1.setName(name);
-
-          //ships are placed on gameboard
-          player1.gameboard.placedShips = startGameboard.placedShips;
 
           //ships of player 1 are displayed on domGameboard
           domHandler.placeShipsOnGameboard(
@@ -309,13 +298,13 @@ export const eventListeners = function () {
       const shuffleButton = document.querySelector(".shuffle-button");
       document.querySelector(".setup-screen").classList.add("PVP-player2");
       if (shuffleButton) {
-        const startDOMGameboard = document.querySelector(
+        const startDomGameboard = document.querySelector(
           ".setup-screen .board-container"
         );
         shuffleButton.addEventListener("click", function () {
-          startGameboard.setShipsRandomly();
-          domHandler.removeShipsFromDOMGameboard(startDOMGameboard);
-          domHandler.placeShipsOnGameboard(startGameboard, startDOMGameboard);
+          player2.gameboard.setShipsRandomly();
+          domHandler.removeShipsFromDOMGameboard(startDomGameboard);
+          domHandler.placeShipsOnGameboard(player2.gameboard, startDomGameboard);
         });
       }
       const setupNextButton = document.querySelector(".next-button.setup");
@@ -325,12 +314,6 @@ export const eventListeners = function () {
           const nameInput = document.getElementById("name");
           const name = nameInput?.value ?? "Player2";
           if (name) player2.setName(name);
-
-          //remove setup screen
-          //domHandler.removeSetupScreen();
-
-          //ships are placed on gameboard
-          player2.gameboard.placedShips = startGameboard.placedShips;
 
           domHandler.placeShipsOnGameboard(
             player2.gameboard,
@@ -492,11 +475,10 @@ export const eventListeners = function () {
             player2.setMode("PC"); 
            player2.setName("PC"); 
             domHandler.removeChooseModeScreen();
-            startGameboard = new Gameboard();
-            startGameboard.setShipsRandomly();
-            const startDomGameboard = domHandler.createGameboard();
-            domHandler.placeShipsOnGameboard(startGameboard, startDomGameboard);
-            domHandler.renderSetupScreen(startDomGameboard);
+            player1.gameboard.setShipsRandomly();
+            const setUpDomGameboard = domHandler.createDomGameboard();
+            domHandler.placeShipsOnGameboard(player1.gameboard, setUpDomGameboard);
+            domHandler.renderSetupScreen(setUpDomGameboard);
             setEventListenersOnSetupScreenForPlayerVsComputer();
           }
         
@@ -533,7 +515,6 @@ export const eventListeners = function () {
   function resetGame() {
     player1 = null;
     player2 = null;
-    startGameboard = null;
     document
       .querySelectorAll(".board-container")
       .forEach((board) => board.remove());
@@ -561,7 +542,6 @@ export const eventListeners = function () {
     handleClickOnGameBoard,
     handleClickOnGameBoardForPlayerVsPC,
     setPlayers,
-    setStartGameboard,
     removeEventListenersOnGameboard,
     setEventListenerOnNewGameButton,
     setEventListenersOnChooseModeScreen,

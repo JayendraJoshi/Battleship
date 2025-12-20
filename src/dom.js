@@ -1,6 +1,6 @@
 export const handleDom = function(){
 
-function createGameboard(){
+function createDomGameboard(){
     const container = document.createElement("div");
     const letters = ["A","B","C","D","E","F","G","H","I","J"];
 
@@ -261,7 +261,7 @@ function removeEndTurnButton(){
 }
 
 return {
-    createGameboard,
+    createDomGameboard,
     placeShipsOnGameboard,
     appendGameboardOnDOM,
     markMissedAttacksOnDOMGameboard,

@@ -26,8 +26,8 @@ describe("Common gameplay mechanics", () => {
     player2.gameboard.setShip("2", ["B", 2], ["B", 3]);
     player2.gameboard.setShip("5", ["C", 1], ["H", 1]);
     const domHandler = handleDom();
-    player1DomGameboard = domHandler.createGameboard();
-    player2DomGameboard = domHandler.createGameboard();
+    player1DomGameboard = domHandler.createDomGameboard();
+    player2DomGameboard = domHandler.createDomGameboard();
     player1.setDomGameboard(player1DomGameboard);
     player2.setDomGameboard(player2DomGameboard);
     player1.setMode("Human");
@@ -154,25 +154,24 @@ describe("Common UI screen transitions", () => {
   });
 
   test("Shuffle button changes ship positions", () => {
-    const startGameboard = new Gameboard();
-    startGameboard.setShipsRandomly();
-    const startDOMGameboard = domHandler.createGameboard();
-    domHandler.placeShipsOnGameboard(startGameboard, startDOMGameboard);
+    player1.gameboard.setShipsRandomly();
+    const setUpDomGameboard = domHandler.createDomGameboard();
+    domHandler.placeShipsOnGameboard(player1.gameboard, setUpDomGameboard);
     
-    domHandler.renderSetupScreen(startDOMGameboard);
-    handleEventListeners.setStartGameboard(startGameboard);
+    domHandler.renderSetupScreen(setUpDomGameboard);
     handleEventListeners.setEventListenersOnSetupScreenForPlayerVsComputer();
     const shuffleButton = document.querySelector(".shuffle-button");
     expect(shuffleButton).toBeTruthy();
 
     // Get initial ship positions
-    const initialShips = [...startGameboard.placedShips];
+    const initialShips = [...player1.gameboard.placedShips];
 
     // Click shuffle
     shuffleButton.click();
 
     // Ships should be different ( high possibility but could sometimes fail if placement is randomly the same!)
-    const newShips = startGameboard.placedShips;
+
+    const newShips = player1.gameboard.placedShips;
     expect(newShips).not.toEqual(initialShips);
   });
 
@@ -180,8 +179,8 @@ describe("Common UI screen transitions", () => {
     //Tests in PVC mode
     player1 = new Player("player1");
     player2 = new Player("PC");
-    const player1DomGameBoard = domHandler.createGameboard();
-    const player2DomGameBoard = domHandler.createGameboard();
+    const player1DomGameBoard = domHandler.createDomGameboard();
+    const player2DomGameBoard = domHandler.createDomGameboard();
     player1.setDomGameboard(player1DomGameBoard);
     player2.setDomGameboard(player2DomGameBoard);
     player1.setMode("Human");
@@ -201,8 +200,8 @@ describe("Common UI screen transitions", () => {
   test("End screen renders when game ends", () => {
     player1 = new Player("player1");
     player2 = new Player("player2");
-    player1DomGameboard = domHandler.createGameboard();
-    player2DomGameboard = domHandler.createGameboard();
+    player1DomGameboard = domHandler.createDomGameboard();
+    player2DomGameboard = domHandler.createDomGameboard();
     player1.gameboard.setShip("2", ["A", 2], ["A", 3]);
     player1.gameboard.setShip("5", ["A", 1], ["E", 1]);
     player2.gameboard.setShip("2", ["B", 2], ["B", 3]);
@@ -251,8 +250,8 @@ describe("PVP mode mechanics", () => {
     player2.gameboard.setShip("2", ["B", 2], ["B", 3]);
     player2.gameboard.setShip("5", ["C", 1], ["H", 1]);
     const domHandler = handleDom();
-    player1DomGameboard = domHandler.createGameboard();
-    player2DomGameboard = domHandler.createGameboard();
+    player1DomGameboard = domHandler.createDomGameboard();
+    player2DomGameboard = domHandler.createDomGameboard();
     player1.setDomGameboard(player1DomGameboard);
     player2.setDomGameboard(player2DomGameboard);
     player1.setMode("Human");
@@ -291,8 +290,6 @@ describe("PVP mode mechanics", () => {
   });
   describe("PVP UI screen transitions", () => {
     let domHandler;
-    let startGameboard;
-    let startDOMGameboard;
 
     beforeEach(() => {
       document.documentElement.innerHTML = html;
@@ -300,8 +297,8 @@ describe("PVP mode mechanics", () => {
 
       player1 = new Player("player1");
       player2 = new Player("player2");
-      player1DomGameboard = domHandler.createGameboard();
-      player2DomGameboard = domHandler.createGameboard();
+      player1DomGameboard = domHandler.createDomGameboard();
+      player2DomGameboard = domHandler.createDomGameboard();
       player1.gameboard.setShip("2", ["A", 2], ["A", 3]);
       player1.gameboard.setShip("5", ["A", 1], ["E", 1]);
       player2.gameboard.setShip("2", ["B", 2], ["B", 3]);
@@ -312,10 +309,8 @@ describe("PVP mode mechanics", () => {
       player2.setMode("PC");
       handleEventListeners.setPlayers(player1, player2);
 
-      startGameboard = new Gameboard();
-      startGameboard.setShipsRandomly();
-      startDOMGameboard = domHandler.createGameboard();
-      domHandler.placeShipsOnGameboard(startGameboard, startDOMGameboard);
+      jest.spyOn(player1.gameboard, "setShipsRandomly").mockImplementation(() => {});
+      jest.spyOn(player2.gameboard, "setShipsRandomly").mockImplementation(() => {});
     });
 
     test("Clicking on next-button on choose-mode-screen will transition to player1 pass-device-screen",()=>{
@@ -373,12 +368,6 @@ describe("PVP mode mechanics", () => {
       document.querySelector(".next-button.setup").click();
       // Should be at game now
       expect(document.querySelector(".setup-screen")).toBeFalsy();
-      /*
-      expect(document.querySelectorAll(".board-container").length).toBe(2);
-      expect(player2DomGameboard.addEventListener).toHaveBeenCalledWith(
-        "click",
-        expect.any(Function)
-      );*/
       expect(document.querySelector(".pass-device-screen")).toBeTruthy();
     })
     test("End-turn-button appears after the turn has ended",()=>{
@@ -393,6 +382,7 @@ describe("PVP mode mechanics", () => {
       document.querySelector(".ready-button").click();
       // player 2 setup
       document.querySelector(".next-button.setup").click();
+      //player 1 pass device screen before game starts
       document.querySelector(".ready-button").click();
       // Misses an attack
       const cellB4 = player2DomGameboard.querySelector(".B4");
@@ -473,8 +463,8 @@ describe("PVC mode mechanics", () => {
     player2.gameboard.setShip("2", ["B", 2], ["B", 3]);
     player2.gameboard.setShip("5", ["C", 1], ["H", 1]);
     const domHandler = handleDom();
-    player1DomGameboard = domHandler.createGameboard();
-    player2DomGameboard = domHandler.createGameboard();
+    player1DomGameboard = domHandler.createDomGameboard();
+    player2DomGameboard = domHandler.createDomGameboard();
     player1.setDomGameboard(player1DomGameboard);
     player2.setDomGameboard(player2DomGameboard);
     player1.setMode("Human");
@@ -560,8 +550,6 @@ describe("PVC mode mechanics", () => {
   });
   describe("PVC UI screen transitions",()=>{
      let domHandler;
-  let startGameboard;
-  let startDOMGameboard;
 
   beforeEach(() => {
     document.documentElement.innerHTML = html;
@@ -569,8 +557,8 @@ describe("PVC mode mechanics", () => {
 
     player1 = new Player("player1");
     player2 = new Player("player2");
-    player1DomGameboard = domHandler.createGameboard();
-    player2DomGameboard = domHandler.createGameboard();
+    player1DomGameboard = domHandler.createDomGameboard();
+    player2DomGameboard = domHandler.createDomGameboard();
     player1.gameboard.setShip("2", ["A", 2], ["A", 3]);
     player1.gameboard.setShip("5", ["A", 1], ["E", 1]);
     player2.gameboard.setShip("2", ["B", 2], ["B", 3]);
@@ -580,11 +568,6 @@ describe("PVC mode mechanics", () => {
     player1.setMode("Human");
     player2.setMode("PC");
     handleEventListeners.setPlayers(player1, player2);
-
-    startGameboard = new Gameboard();
-    startGameboard.setShipsRandomly();
-    startDOMGameboard = domHandler.createGameboard();
-    domHandler.placeShipsOnGameboard(startGameboard, startDOMGameboard);
   });
     test("Clicking on next-button on choose-mode while pc-button is active will open PVC setup-screen", () => {
     domHandler.renderChooseModeScreen();
