@@ -260,6 +260,19 @@ function removeEndTurnButton(){
     document.querySelector(".end-turn-button").remove();
 }
 
+function switchGameboardVisibility(waitingPlayer, playingPlayer){
+    document.querySelector(".page-cover").remove();
+    removePassDeviceScreen();
+    hideShipPlacementFromDOMGameboard(playingPlayer.getDomGameboard());
+    placeShipsOnGameboard(waitingPlayer.gameboard, waitingPlayer.getDomGameboard());
+
+    markMissedAttacksOnDOMGameboard(playingPlayer.gameboard, playingPlayer.getDomGameboard());
+    markSuccessfulAttacksOnDOMGameboard(playingPlayer.gameboard, playingPlayer.getDomGameboard());
+
+    markMissedAttacksOnDOMGameboard(waitingPlayer.gameboard, waitingPlayer.getDomGameboard());
+    markSuccessfulAttacksOnDOMGameboard(waitingPlayer.gameboard, waitingPlayer.getDomGameboard());
+}
+
 return {
     createDomGameboard,
     placeShipsOnGameboard,
@@ -279,6 +292,7 @@ return {
     removePassDeviceScreen,
     hideShipPlacementFromDOMGameboard,
     renderEndTurnButton,
-    removeEndTurnButton
+    removeEndTurnButton,
+    switchGameboardVisibility
 }
 }
