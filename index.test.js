@@ -548,6 +548,38 @@ describe("PVC mode mechanics", () => {
       allAttackedCells[allAttackedCells.length - 1]
     );
   });
+   test("Pc find row/column of last two consecutive succesful hits and attacks adjacent to them",()=>{
+       handleEventListeners.setEventListenersOnGameboard(
+      player2DomGameboard,
+      "PVP"
+    );
+    //Player 1 attacks
+    const cellA5 = player2DomGameboard.querySelector(".A5");
+    cellA5.click();
+    //Simulate PC's (player 2) automated turn
+    const cellB1 = player1DomGameboard.querySelector(".B1");
+    cellB1.click();
+    player2.attackResults.push(["B1", true]);
+    const cellC1 = player1DomGameboard.querySelector(".C1");
+    cellC1.click();
+    player2.attackResults.push(["C1", true]);
+
+    //Expect automated attack to be adjacent
+    handleEventListeners.removeEventListenersOnGameboard(
+      player1DomGameboard,
+      "PVP"
+    );
+    handleEventListeners.setEventListenersOnGameboard(
+      player1DomGameboard,
+      "PVC"
+    );
+    // Now two in a row were hit, the next attack should be either A1 or D1
+    player2.automatedAttack(player1.getDomGameboard(),player1.getGameboard());
+    let allAttackedCells = player2.attackResults.flatMap((entry) => entry[0]);
+    expect(["A1", "D1"]).toContain(
+      allAttackedCells[allAttackedCells.length - 1]
+    );
+    })
   describe("PVC UI screen transitions",()=>{
      let domHandler;
 
