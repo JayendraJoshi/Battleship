@@ -68,9 +68,9 @@ export const eventListeners = function () {
         ".setup-screen .board-container"
       );
       shuffleButton.addEventListener("click", function () {
-        player1.getDomGameboard.setShipsRandomly();
+        player1.gameboard.setShipsRandomly();
         domHandler.removeShipsFromDOMGameboard(startDomGameboard);
-        domHandler.placeShipsOnGameboard(player1.getDomGameboard, startDomGameboard);
+        domHandler.placeShipsOnGameboard(player1.gameboard, startDomGameboard);
       });
     }
     const setupNextButton = document.querySelector(".next-button.setup");
@@ -150,7 +150,7 @@ export const eventListeners = function () {
           domHandler.appendGameboardOnDOM(player2.getDomGameboard(), "player2");
 
           setEventListenersOnGameboard(player2.getDomGameboard(), "PVC");
-
+          domHandler.renderInfoContainer();
           domHandler.showMessageOnInfoContainer(player1, "start");
         });
       }
@@ -162,14 +162,18 @@ export const eventListeners = function () {
       endTurnButton.addEventListener("click", function () {
         domHandler.renderPassDeviceScreen(waitingPlayer);
         domHandler.hideShipPlacementFromDOMGameboard(playingPlayer.getDomGameboard());
-        setEventListenerOnReadyButton(() =>
-          domHandler.switchGameboardVisibility(waitingPlayer, playingPlayer)
-        );
+        setEventListenerOnReadyButton(() => {
+          domHandler.switchGameboardVisibility(waitingPlayer, playingPlayer);
+          swapEventListenersOfGameboards(playingPlayer, waitingPlayer);
+          domHandler.addGameViewClassToMain();
+        });
         domHandler.removeEndTurnButton();
       });
     }
   }
-
+  function swapEventListenersOfGameboards(playingPlayer,waitingPlayer){
+    setEventListenersOnGameboard(playingPlayer.getDomGameboard(), "PVP");
+  }
   function setEventListenersOnChooseModeScreen() {
     const pcButton = document.querySelector(".pc-button");
     const playerButton = document.querySelector(".player-button");

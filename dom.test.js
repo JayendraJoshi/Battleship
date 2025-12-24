@@ -183,10 +183,6 @@ describe("Choose-mode screen", () => {
       chooseModeScreen.querySelector(".next-button.choose-mode")
     ).toBeTruthy();
   });
-  test("Page-cover class is active while choose-mode screen is rendered", () => {
-    domHandler.renderChooseModeScreen();
-    expect(document.querySelector(".page-cover")).toBeTruthy();
-  });
   test("Active-mode class is on player-button as default", () => {
     domHandler.renderChooseModeScreen();
     expect(

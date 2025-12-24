@@ -53,10 +53,10 @@ export function gameController(deps) {
     const { player1 } = getPlayers();
     domHandler.removeSetupScreen();
     domHandler.renderPassDeviceScreen(player1);
-    setEventListenerOnReadyButton(transitionFromPlayer2SetupScreenToGame);
+    setEventListenerOnReadyButton(transitionFromPlayer1PassDeviceScreenToGame);
   }
 
-  function transitionFromPlayer2SetupScreenToGame() {
+  function transitionFromPlayer1PassDeviceScreenToGame() {
     const { player1, player2 } = getPlayers();
     domHandler.removePassDeviceScreen();
     document.querySelector(".page-cover").remove();
@@ -64,7 +64,9 @@ export function gameController(deps) {
     domHandler.appendGameboardOnDOM(player1.getDomGameboard(), "Player1");
     domHandler.appendGameboardOnDOM(player2.getDomGameboard(), "Player2");
     setEventListenersOnGameboard(player2.getDomGameboard(), "PVP");
+    domHandler.renderInfoContainer();
     domHandler.showMessageOnInfoContainer(player1, "start");
+    domHandler.addGameViewClassToMain();
   }
 
   function getClassFromDomCell(event) {
@@ -217,13 +219,11 @@ export function gameController(deps) {
     const attackResult = waitingPlayer.gameboard.receiveAttack(coordinateAsArray);
     if (attackResult === false) {
       removeEventListenersOnGameboard(waitingPlayer.getDomGameboard(), "PVP");
-      setEventListenersOnGameboard(playingPlayer.getDomGameboard(), "PVP");
       domHandler.markMissedAttacksOnDOMGameboard(
         waitingPlayer.gameboard,
         waitingPlayer.getDomGameboard()
       );
       domHandler.showMessageOnInfoContainer(playingPlayer, "missed");
-
       domHandler.renderEndTurnButton();
       setEventListenerOnEndTurnButton(playingPlayer, waitingPlayer);
       return;

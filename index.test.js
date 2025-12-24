@@ -28,6 +28,7 @@ describe("Common gameplay mechanics", () => {
     const domHandler = handleDom();
     player1DomGameboard = domHandler.createDomGameboard();
     player2DomGameboard = domHandler.createDomGameboard();
+    domHandler.renderInfoContainer();
     player1.setDomGameboard(player1DomGameboard);
     player2.setDomGameboard(player2DomGameboard);
     player1.setMode("Human");
@@ -114,6 +115,8 @@ describe("Common gameplay mechanics", () => {
     );
     const cellA5 = player2DomGameboard.querySelector(".A5");
     cellA5.click();
+    document.querySelector(".end-turn-button").click();
+    document.querySelector(".ready-button").click();
     //player2 turn
     jest.spyOn(player1DomGameboard, "removeEventListener");
     jest.spyOn(player2DomGameboard, "removeEventListener");
@@ -143,6 +146,7 @@ describe("Common UI screen transitions", () => {
   beforeEach(() => {
     document.documentElement.innerHTML = html;
     domHandler = handleDom();
+    domHandler.renderInfoContainer();
   });
 
   test("Clicking on next-button on choose-mode-screen will transition it to setup-screen", () => {
@@ -252,6 +256,7 @@ describe("PVP mode mechanics", () => {
     const domHandler = handleDom();
     player1DomGameboard = domHandler.createDomGameboard();
     player2DomGameboard = domHandler.createDomGameboard();
+    domHandler.renderInfoContainer();
     player1.setDomGameboard(player1DomGameboard);
     player2.setDomGameboard(player2DomGameboard);
     player1.setMode("Human");
@@ -271,6 +276,8 @@ describe("PVP mode mechanics", () => {
     );
     const cellA5 = player2DomGameboard.querySelector(".A5");
     cellA5.click();
+    document.querySelector(".end-turn-button").click();
+    document.querySelector(".ready-button").click();
     //player2 turn
     expect(player2DomGameboard.removeEventListener).toHaveBeenCalled();
     expect(player1DomGameboard.addEventListener).toHaveBeenCalledWith(
@@ -281,12 +288,11 @@ describe("PVP mode mechanics", () => {
     cellA2.click();
     const cellD2 = player1DomGameboard.querySelector(".D2");
     cellD2.click(); //missed shot
+     document.querySelector(".end-turn-button").click();
+    document.querySelector(".ready-button").click();
     //player1 turn again
     expect(player1DomGameboard.removeEventListener).toHaveBeenCalled();
-    expect(player2DomGameboard.addEventListener).toHaveBeenCalledWith(
-      "click",
-      expect.any(Function)
-    );
+    expect(player2DomGameboard.addEventListener).toHaveBeenCalledTimes(2);
   });
   describe("PVP UI screen transitions", () => {
     let domHandler;
@@ -308,7 +314,7 @@ describe("PVP mode mechanics", () => {
       player1.setMode("Human");
       player2.setMode("PC");
       handleEventListeners.setPlayers(player1, player2);
-
+      domHandler.renderInfoContainer();
       jest.spyOn(player1.gameboard, "setShipsRandomly").mockImplementation(() => {});
       jest.spyOn(player2.gameboard, "setShipsRandomly").mockImplementation(() => {});
     });
@@ -465,6 +471,7 @@ describe("PVC mode mechanics", () => {
     const domHandler = handleDom();
     player1DomGameboard = domHandler.createDomGameboard();
     player2DomGameboard = domHandler.createDomGameboard();
+    domHandler.renderInfoContainer();
     player1.setDomGameboard(player1DomGameboard);
     player2.setDomGameboard(player2DomGameboard);
     player1.setMode("Human");

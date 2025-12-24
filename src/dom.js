@@ -71,6 +71,11 @@ function appendGameboardOnDOM(gameboard,playerName){
     gameboard.classList.add(playerName);
     main.appendChild(gameboard);
 }
+function renderInfoContainer(){
+    const infoContainer = document.createElement("div");
+    infoContainer.classList.add("info-container");
+    document.querySelector("main").appendChild(infoContainer);
+}
 function markMissedAttacksOnDOMGameboard(gameboard,domboard){
     const allCells = domboard.querySelectorAll(".cell");
     let coordinatesOfMissedAttacks = gameboard.missedAttacks;
@@ -165,14 +170,10 @@ function renderChooseModeScreen(){
     div.appendChild(pcButton);
     div.appendChild(playerButton);
     div.appendChild(chooseModeNextButton);
-    const pageCoverDiv = document.createElement("div");
-    pageCoverDiv.classList.add("page-cover");
     document.querySelector("main").appendChild(div);
-    document.querySelector("main").appendChild(pageCoverDiv);
 }
 function removeChooseModeScreen(){
     document.querySelector(".choose-mode-screen").remove();
-    document.querySelector(".page-cover").remove();
 }
 function renderSetupScreen(domGameboard){
     const div = document.createElement("div");
@@ -182,31 +183,27 @@ function renderSetupScreen(domGameboard){
     nameInput.id ='name';
     nameInput.type='text';
     nameLabel.htmlFor='name';
-    nameLabel.textContent = 'Your name:';
+    nameLabel.textContent = 'Enter Your Name:';
     const intro = document.createElement("h2");
-    intro.textContent="Choose your ship placement";
+    intro.textContent="Choose Your Ship Placement:";
     const shuffleButton = document.createElement("button");
     shuffleButton.textContent="Shuffle";
     shuffleButton.classList.add("shuffle-button");
     const setupNextButton = document.createElement("button");
     setupNextButton.textContent="Next";
     setupNextButton.classList.add("next-button", "setup");
-    const pageCoverDiv = document.createElement("div");
-    pageCoverDiv.classList.add("page-cover");
     domGameboard.classList.add("board-container");
     const main = document.querySelector("main");
+    nameLabel.appendChild(nameInput);
     main.appendChild(div);
     div.appendChild(nameLabel);
-    div.appendChild(nameInput);
     div.appendChild(intro);
     div.appendChild(shuffleButton);
     div.appendChild(domGameboard);
     div.appendChild(setupNextButton);
-    main.appendChild(pageCoverDiv);
 }
 function removeSetupScreen(){
     document.querySelector(".setup-screen").remove();
-    document.querySelector(".page-cover").remove();
 }
 function renderEndScreen(winner){
     const div = document.createElement("div");
@@ -224,7 +221,7 @@ function renderEndScreen(winner){
     div.appendChild(endH2);
     div.appendChild(newGameButton)
     main.appendChild(div);
-    main.appendChild(pageCoverDiv);
+    document.querySelector("#root").appendChild(pageCoverDiv);
 }
 function removeEndScreen(){
     document.querySelector(".end-screen").remove();
@@ -245,7 +242,7 @@ document.querySelector("main").appendChild(div);
 const pageCoverDiv = document.createElement("div");
     pageCoverDiv.classList.add("page-cover");
 
-document.querySelector("main").appendChild(pageCoverDiv);
+document.querySelector("#root").appendChild(pageCoverDiv);
 }
 function removePassDeviceScreen(){
     document.querySelector(".pass-device-screen").remove();
@@ -261,7 +258,7 @@ function removeEndTurnButton(){
 }
 
 function switchGameboardVisibility(waitingPlayer, playingPlayer){
-    document.querySelector(".page-cover").remove();
+   document.querySelector(".page-cover").remove();
     removePassDeviceScreen();
     hideShipPlacementFromDOMGameboard(playingPlayer.getDomGameboard());
     placeShipsOnGameboard(waitingPlayer.gameboard, waitingPlayer.getDomGameboard());
@@ -271,6 +268,12 @@ function switchGameboardVisibility(waitingPlayer, playingPlayer){
 
     markMissedAttacksOnDOMGameboard(waitingPlayer.gameboard, waitingPlayer.getDomGameboard());
     markSuccessfulAttacksOnDOMGameboard(waitingPlayer.gameboard, waitingPlayer.getDomGameboard());
+}
+function addGameViewClassToMain(){
+    document.querySelector("main").classList.add("game-layout");
+}
+function removeGameViewClassFromMain(){
+document.querySelector("main").classList.remove("game-layout");
 }
 
 return {
@@ -293,6 +296,9 @@ return {
     hideShipPlacementFromDOMGameboard,
     renderEndTurnButton,
     removeEndTurnButton,
-    switchGameboardVisibility
+    switchGameboardVisibility,
+    renderInfoContainer,
+    addGameViewClassToMain,
+    removeGameViewClassFromMain
 }
 }
