@@ -209,6 +209,7 @@ export const eventListeners = function () {
     if (mode === "PVP") {
       gameboard.addEventListener("click", controller.handleClickOnGameBoard);
     } else if (mode === "PVC") {
+      domHandler.addGameViewClassToMain();
       gameboard.addEventListener(
         "click",
         controller.handleClickOnGameBoardForPlayerVsPC

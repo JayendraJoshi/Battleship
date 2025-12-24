@@ -107,7 +107,6 @@ export function gameController(deps) {
     if (waitingPlayer === pcPlayer) {
       if (attackResult === false) {
         removeEventListenersOnGameboard(waitingPlayer.getDomGameboard(), "PVC");
-        setEventListenersOnGameboard(playingPlayer.getDomGameboard(), "PVC");
         domHandler.markMissedAttacksOnDOMGameboard(
           waitingPlayer.gameboard,
           waitingPlayer.getDomGameboard()
@@ -117,6 +116,7 @@ export function gameController(deps) {
           "missed"
         );
         setTimeout(() => {
+          setEventListenersOnGameboard(playingPlayer.getDomGameboard(), "PVC");
           pcPlayer.automatedAttack(
             playingPlayer.getDomGameboard(),
             playingPlayer.getGameboard()
@@ -176,6 +176,7 @@ export function gameController(deps) {
           return;
         }
         if (waitingPlayer.gameboard.hasLastAttackSunkAShip()) {
+          removeEventListenersOnGameboard(waitingPlayer.getDomGameboard(), "PVC");
           const lastSunkShip = waitingPlayer.gameboard.getLastSunkShip();
           domHandler.showMessageInInfoContainerForPlayerVsPC(
             playingPlayer,
@@ -183,10 +184,12 @@ export function gameController(deps) {
             lastSunkShip.getName()
           );
         } else {
+          removeEventListenersOnGameboard(waitingPlayer.getDomGameboard(), "PVC");
           domHandler.showMessageInInfoContainerForPlayerVsPC(playingPlayer, "hit");
         }
         pcPlayer.attackResults.push([coordinateClass, true]);
         setTimeout(() => {
+         setEventListenersOnGameboard(waitingPlayer.getDomGameboard(),"PVC");
           pcPlayer.automatedAttack(
             waitingPlayer.getDomGameboard(),
             waitingPlayer.getGameboard()

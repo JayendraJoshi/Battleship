@@ -222,10 +222,12 @@ function renderEndScreen(winner){
     div.appendChild(newGameButton)
     main.appendChild(div);
     document.querySelector("#root").appendChild(pageCoverDiv);
+    if(document.querySelector(".info-container")) document.querySelector(".info-container").remove();
 }
 function removeEndScreen(){
     document.querySelector(".end-screen").remove();
     document.querySelector(".page-cover").remove();
+    if(document.querySelector(".game-layout"))removeGameViewClassFromMain();
 }
 function renderPassDeviceScreen(player){
 const div = document.createElement("div");

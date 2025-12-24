@@ -480,51 +480,44 @@ describe("PVC mode mechanics", () => {
   });
 
   test("PC performs automatic attacks after human turn", () => {
+    jest.useFakeTimers();
+
     jest.spyOn(player1DomGameboard, "addEventListener");
     jest.spyOn(player2DomGameboard, "removeEventListener");
-    handleEventListeners.setEventListenersOnGameboard(
-      player2DomGameboard,
-      "PVC"
-    );
+    jest.spyOn(player2, "automatedAttack").mockImplementation(() => {});
+
+    handleEventListeners.setEventListenersOnGameboard(player2DomGameboard, "PVC");
     const cellA5 = player2DomGameboard.querySelector(".A5");
     cellA5.click();
-    //PC turn
     expect(player2DomGameboard.removeEventListener).toHaveBeenCalled();
+    jest.advanceTimersByTime(1000);
     expect(player1DomGameboard.addEventListener).toHaveBeenCalledWith(
       "click",
       expect.any(Function)
     );
-    player2.automatedAttack(player1.getDomGameboard(), player1.getGameboard());
+
+    jest.useRealTimers();
   });
 
   test("Turn switches back to Human after PC misses", () => {
-    jest.spyOn(player1DomGameboard, "addEventListener");
-    jest.spyOn(player1DomGameboard, "removeEventListener");
+    jest.useFakeTimers();
 
+    jest.spyOn(player1DomGameboard, "removeEventListener");
     jest.spyOn(player2DomGameboard, "removeEventListener");
     jest.spyOn(player2DomGameboard, "addEventListener");
+    jest.spyOn(player2, "automatedAttack").mockImplementation((enemyDomGameboard) => {
+      enemyDomGameboard.querySelector(".J10").click();
+    });
 
-    handleEventListeners.setEventListenersOnGameboard(
-      player2DomGameboard,
-      "PVC"
-    );
+    handleEventListeners.setEventListenersOnGameboard(player2DomGameboard, "PVC");
     const cellA5 = player2DomGameboard.querySelector(".A5");
     cellA5.click();
-    //Pc turn
     expect(player2DomGameboard.removeEventListener).toHaveBeenCalledTimes(1);
-    expect(player1DomGameboard.addEventListener).toHaveBeenCalledTimes(1);
-    let attackResult = true;
-    while (attackResult === true) {
-      player2.automatedAttack(
-        player1.getDomGameboard(),
-        player1.getGameboard()
-      );
-      let lastAttack = player2.attackResults[player2.attackResults.length - 1];
-      attackResult = lastAttack[1];
-    }
-    //Human turn should begin now
+    jest.advanceTimersByTime(1000);
     expect(player1DomGameboard.removeEventListener).toHaveBeenCalledTimes(1);
     expect(player2DomGameboard.addEventListener).toHaveBeenCalledTimes(2);
+
+    jest.useRealTimers();
   });
 
   test("PC attacks adjacent cells after successful hit", () => {
