@@ -1,24 +1,24 @@
 // webpack.dev.js
-const { merge } = require('webpack-merge');
-const common = require('./webpack.common.js');
+const { merge } = require("webpack-merge");
+const common = require("./webpack.common.js");
 
 module.exports = merge(common, {
-  mode: 'development',
-  devtool: 'eval-source-map',
+  mode: "development",
+  devtool: "eval-source-map",
   module: {
     rules: [
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
+        use: ["style-loader", "css-loader"],
       },
     ],
   },
   // Add development-specific settings here
   devServer: {
-    static: './dist',
+    static: "./dist",
     port: 8080,
     open: true,
     hot: true,
-    watchFiles: ['src/template.html'],
+    watchFiles: ["src/template.html"],
   },
 });

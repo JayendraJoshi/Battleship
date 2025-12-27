@@ -1,4 +1,3 @@
-import { Gameboard } from "./src/gameboard";
 import { handleDom } from "./src/dom";
 import { Player } from "./src/player";
 import { eventListeners } from "./src/index.js";
@@ -7,7 +6,7 @@ import path from "path";
 
 const html = fs.readFileSync(
   path.resolve(__dirname, "./src/template.html"),
-  "utf8"
+  "utf8",
 );
 
 let domHandler;
@@ -45,7 +44,7 @@ describe("DomGameboard", () => {
       for (let j = 1; j <= 10; j++) {
         const className = letters[i] + j;
         const found = Array.from(allCells).some((cell) =>
-          cell.classList.contains(className)
+          cell.classList.contains(className),
         );
         expect(found).toBe(true);
       }
@@ -62,15 +61,15 @@ describe("DomGameboard", () => {
 
     const placedShips = player1.gameboard.placedShips;
     let coordinatesOfPlacedShips = placedShips.flatMap(
-      (shipPath) => shipPath[1]
+      (shipPath) => shipPath[1],
     );
     const classNamesOfShipCoordinates = coordinatesOfPlacedShips.map(
-      (coordinate) => coordinate[0] + coordinate[1]
+      (coordinate) => coordinate[0] + coordinate[1],
     );
 
     classNamesOfShipCoordinates.forEach((className) => {
       const cell = Array.from(allCells).find((cell) =>
-        cell.classList.contains(className)
+        cell.classList.contains(className),
       );
       expect(cell).toBeTruthy();
       expect(cell.style.backgroundColor).toBe("rgb(128, 128, 128)");
@@ -103,12 +102,12 @@ describe("DomGameboard", () => {
 
     let coordinatesOfMissedAttacks = player2.gameboard.missedAttacks;
     const classNamesOfShipCoordinates = coordinatesOfMissedAttacks.map(
-      (coordinate) => coordinate[0] + coordinate[1]
+      (coordinate) => coordinate[0] + coordinate[1],
     );
 
     classNamesOfShipCoordinates.forEach((className) => {
       const cell = Array.from(allCells).find((cell) =>
-        cell.classList.contains(className)
+        cell.classList.contains(className),
       );
       expect(cell).toBeTruthy();
       expect(cell.style.backgroundColor).toBe("rgb(29, 137, 187)");
@@ -141,12 +140,12 @@ describe("DomGameboard", () => {
 
     let coordinatesOfsuccessfulAttacks = player2.gameboard.successfulAttacks;
     const classNamesOfShipCoordinates = coordinatesOfsuccessfulAttacks.map(
-      (coordinate) => coordinate[0] + coordinate[1]
+      (coordinate) => coordinate[0] + coordinate[1],
     );
 
     classNamesOfShipCoordinates.forEach((className) => {
       const cell = Array.from(allCells).find((cell) =>
-        cell.classList.contains(className)
+        cell.classList.contains(className),
       );
       expect(cell).toBeTruthy();
       expect(cell.style.backgroundColor).toBe("rgb(200, 40, 35)");
@@ -180,35 +179,41 @@ describe("Choose-mode screen", () => {
     expect(chooseModeScreen.querySelector(".pc-button")).toBeTruthy();
     expect(chooseModeScreen.querySelector(".player-button")).toBeTruthy();
     expect(
-      chooseModeScreen.querySelector(".next-button.choose-mode")
+      chooseModeScreen.querySelector(".next-button.choose-mode"),
     ).toBeTruthy();
   });
   test("Active-mode class is on player-button as default", () => {
     domHandler.renderChooseModeScreen();
     expect(
-      document.querySelector(".pc-button").classList.contains("active-mode")
+      document.querySelector(".pc-button").classList.contains("active-mode"),
     ).toBe(true);
     expect(
-      document.querySelector(".player-button").classList.contains("active-mode")
+      document
+        .querySelector(".player-button")
+        .classList.contains("active-mode"),
     ).toBe(false);
   });
   test("Active class is added on the last button that is clicked and removed from the other", () => {
     domHandler.renderChooseModeScreen();
     eventHandler.setEventListenersOnChooseModeScreen();
     expect(
-      document.querySelector(".pc-button").classList.contains("active-mode")
+      document.querySelector(".pc-button").classList.contains("active-mode"),
     ).toBe(true);
     expect(
-      document.querySelector(".player-button").classList.contains("active-mode")
+      document
+        .querySelector(".player-button")
+        .classList.contains("active-mode"),
     ).toBe(false);
     document.querySelector(".player-button").click();
 
     //active class should now be on player button and not on pc button
     expect(
-      document.querySelector(".pc-button").classList.contains("active-mode")
+      document.querySelector(".pc-button").classList.contains("active-mode"),
     ).toBe(false);
     expect(
-      document.querySelector(".player-button").classList.contains("active-mode")
+      document
+        .querySelector(".player-button")
+        .classList.contains("active-mode"),
     ).toBe(true);
   });
 });
@@ -229,15 +234,15 @@ describe("Pass-device screen", () => {
     domHandler.removePassDeviceScreen();
     expect(document.querySelector(".pass-device-screen")).toBeFalsy();
   });
-  test("End-turn button is rendered",()=>{
+  test("End-turn button is rendered", () => {
     domHandler.renderEndTurnButton();
     expect(document.querySelector(".end-turn-button")).toBeTruthy();
-  })
-  test("End-turn-button can be removed",()=>{
+  });
+  test("End-turn-button can be removed", () => {
     domHandler.renderEndTurnButton();
     domHandler.removeEndTurnButton();
     expect(document.querySelector(".end-turn-button")).toBeFalsy();
-  })
+  });
 });
 describe("End screen", () => {
   beforeEach(() => {

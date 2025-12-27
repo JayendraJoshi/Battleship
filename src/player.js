@@ -36,8 +36,8 @@ export class Player {
       const lastSuccessfulEntry = this.getCoordinateOfLastSuccessfulAttack();
       if (lastSuccessfulEntry) {
         let indexOfCurrentRow = this.gameboard.letters.indexOf(
-            lastSuccessfulEntry[0][0]
-          );
+          lastSuccessfulEntry[0][0],
+        );
         let currentColumnInt = parseInt(lastSuccessfulEntry.slice(1), 10);
 
         if (
@@ -46,20 +46,17 @@ export class Player {
             currentColumnInt,
           ]) != enemyGameboard.getLastSunkShip()
         ) {
-          const entriesOfLastHitShip = this.getAllSuccessfulEntriesOfLastHitShip(enemyGameboard);
+          const entriesOfLastHitShip =
+            this.getAllSuccessfulEntriesOfLastHitShip(enemyGameboard);
 
-          if (
-            entriesOfLastHitShip.length >= 2
-          ) {
+          if (entriesOfLastHitShip.length >= 2) {
             const allEntries = entriesOfLastHitShip;
             const firstEntry = allEntries[0];
             const lastEntry = allEntries[allEntries.length - 1];
             const firstEntryAsArray = this.getCoordinateAsArray(firstEntry);
             const lastEntryAsArray = this.getCoordinateAsArray(lastEntry);
 
-            let attempt = 0;
             while (true) {
-              attempt += 1;
               let randomInt = this.gameboard.getRandomInt(1, 2);
               let newCell;
 
@@ -70,14 +67,14 @@ export class Player {
                     newCell = this.getCellAdjacentByOne(
                       3,
                       this.gameboard.letters.indexOf(firstEntryAsArray[0]),
-                      firstEntryAsArray[1]
+                      firstEntryAsArray[1],
                     );
                     break;
                   case 2:
                     newCell = this.getCellAdjacentByOne(
                       4,
                       this.gameboard.letters.indexOf(lastEntryAsArray[0]),
-                      lastEntryAsArray[1]
+                      lastEntryAsArray[1],
                     );
                     break;
                 }
@@ -87,14 +84,14 @@ export class Player {
                     newCell = this.getCellAdjacentByOne(
                       1,
                       this.gameboard.letters.indexOf(firstEntryAsArray[0]),
-                      firstEntryAsArray[1]
+                      firstEntryAsArray[1],
                     );
                     break;
                   case 2:
                     newCell = this.getCellAdjacentByOne(
                       2,
                       this.gameboard.letters.indexOf(lastEntryAsArray[0]),
-                      lastEntryAsArray[1]
+                      lastEntryAsArray[1],
                     );
                     break;
                 }
@@ -107,31 +104,28 @@ export class Player {
             }
             return;
           }
+          while (true) {
+            let randomInt = this.gameboard.getRandomInt(1, 4);
+            let adjacentCellClass = this.getCellAdjacentByOne(
+              randomInt,
+              indexOfCurrentRow,
+              currentColumnInt,
+            );
 
-            let attempt = 0;
-            while (true) {
-                attempt += 1;
-              let randomInt = this.gameboard.getRandomInt(1, 4);
-              let adjacentCellClass = this.getCellAdjacentByOne(
-                randomInt,
-                indexOfCurrentRow,
-                currentColumnInt
-              );
-
-              if (allAttackedCells.includes(adjacentCellClass)) continue;
-              let adjacentCellNode = enemyDomGameboard.querySelector(
-                `.${adjacentCellClass}`
-              );
-              if (!adjacentCellNode) continue;
-              adjacentCellNode.click();
-              break;
-            }
-            return;
+            if (allAttackedCells.includes(adjacentCellClass)) continue;
+            let adjacentCellNode = enemyDomGameboard.querySelector(
+              `.${adjacentCellClass}`,
+            );
+            if (!adjacentCellNode) continue;
+            adjacentCellNode.click();
+            break;
+          }
+          return;
         }
       }
       const hasAttacked = this.doRandomAttack(
         enemyDomGameboard,
-        allAttackedCells
+        allAttackedCells,
       );
       if (hasAttacked) break;
       continue;
@@ -159,14 +153,14 @@ export class Player {
     const lastSuccessfulAttackAsAnArray =
       this.getCoordinateAsArray(lastSuccessfulAttack);
     const lastShipThatWasHit = enemyGameboard.getShipThatWasHit(
-      lastSuccessfulAttackAsAnArray
+      lastSuccessfulAttackAsAnArray,
     );
     let allEntriesOfLastHitShip = [];
 
     this.attackResults.forEach((coordinate) => {
       if (
         enemyGameboard.getShipThatWasHit(
-          this.getCoordinateAsArray(coordinate[0])
+          this.getCoordinateAsArray(coordinate[0]),
         ) === lastShipThatWasHit
       ) {
         allEntriesOfLastHitShip.push(coordinate[0]);
@@ -175,21 +169,21 @@ export class Player {
 
     return this.sortEntries(allEntriesOfLastHitShip);
   }
-  sortEntries(entries){
-    if(entries.length<=1) return entries;
+  sortEntries(entries) {
+    if (entries.length <= 1) return entries;
     let entriesAsArrays = [];
-    entries.forEach((entry)=>{
+    entries.forEach((entry) => {
       entriesAsArrays.push(this.getCoordinateAsArray(entry));
-    })
-    if(entriesAsArrays[0][0]===entriesAsArrays[1][0]){
+    });
+    if (entriesAsArrays[0][0] === entriesAsArrays[1][0]) {
       //rows are the same, so sort by column
-      entriesAsArrays.sort((a,b) => a[1]-b[1]);
-    }else{
+      entriesAsArrays.sort((a, b) => a[1] - b[1]);
+    } else {
       entriesAsArrays.sort();
     }
-    return entriesAsArrays.map((entry)=>{
+    return entriesAsArrays.map((entry) => {
       return entry[0] + entry[1];
-    })
+    });
   }
   getCellAdjacentByOne(randomInt, indexOfCurrentRow, currentColumnInt) {
     let rowOfNewAttack;

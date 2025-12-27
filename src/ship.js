@@ -1,30 +1,26 @@
-export class Ship{
+export class Ship {
+  length;
+  numberOfHits = 0;
+  name;
 
-length;
-numberOfHits = 0;
-name;
-
-constructor(length){
+  constructor(length) {
     this.length = length;
-}
+  }
 
-hit(){
+  hit() {
     this.numberOfHits++;
-}
-isSunk(){
-    if(this.numberOfHits === this.length){
-        return true;
+  }
+  isSunk() {
+    if (this.numberOfHits === this.length) {
+      return true;
+    } else {
+      return false;
     }
-    else{
-        return false;
-    }
-}
-setName(name){
+  }
+  setName(name) {
     this.name = name;
-}
-getName(){
+  }
+  getName() {
     return this.name;
-}
-
-
+  }
 }
