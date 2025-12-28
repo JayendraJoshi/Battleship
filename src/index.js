@@ -174,6 +174,7 @@ export const eventListeners = function () {
           domHandler.switchGameboardVisibility(waitingPlayer, playingPlayer);
           swapEventListenersOfGameboards(playingPlayer, waitingPlayer);
           domHandler.addGameViewClassToMain();
+          domHandler.showMessageOnInfoContainer(waitingPlayer,"turn");
         });
         domHandler.removeEndTurnButton();
       });

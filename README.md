@@ -2,7 +2,7 @@
 
 [![Deploy to gh-pages](https://github.com/JayendraJoshi/Battleship/actions/workflows/workflow.yml/badge.svg)](https://github.com/JayendraJoshi/Battleship/actions/workflows/workflow.yml)
 
-A Battleship game with a local PvP mode and a PvC (Player vs Computer) mode.
+A classic Battleship game featuring local pass-and-play PvP and PvC (Player vs Computer) modes. The app is automatically built and deployed to GitHub Pages using a GitHub Actions workflow.
 
 ## About This Project
 
@@ -19,6 +19,7 @@ Through this project, I learned how to use Jest and write tests for my code. I a
 - JavaScript (ES6+)
 - Webpack
 - Git & GitHub Pages
+- Github Actions
 - Jest
 - Prettier
 - ESLint

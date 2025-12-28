@@ -1,11 +1,11 @@
-import { handleDom } from "./src/dom";
-import { Player } from "./src/player";
-import { eventListeners } from "./src/index.js";
+import { handleDom } from "../src/dom.js";
+import { Player } from "../src/player.js";
+import { eventListeners } from "../src/index.js";
 import fs from "fs";
 import path from "path";
 
 const html = fs.readFileSync(
-  path.resolve(__dirname, "./src/template.html"),
+  path.resolve(__dirname, "../src/template.html"),
   "utf8",
 );
 

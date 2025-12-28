@@ -131,6 +131,9 @@ export const handleDom = function () {
       case "start":
         infoContainer.textContent = "You start, " + player.getName() + "!";
         break;
+      case "turn":
+        infoContainer.textContent = "Your turn, " + player.getName() + "!";
+        break;
     }
   }
   function showMessageInInfoContainerForPlayerVsPC(
